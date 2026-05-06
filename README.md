@@ -3,9 +3,7 @@
 [![CI](https://github.com/cayde-6/icalendar/actions/workflows/ci.yml/badge.svg)](https://github.com/cayde-6/icalendar/actions/workflows/ci.yml)
 [![Release](https://github.com/cayde-6/icalendar/actions/workflows/release.yml/badge.svg)](https://github.com/cayde-6/icalendar/actions/workflows/release.yml)
 
-![icalendar hero](./assets/hero.svg)
-
-![icalendar demo](./assets/demo.svg)
+![icalendar hero](./assets/hero.png)
 
 Production-ready TypeScript CLI for **CalDAV calendars**, **iCalendar events**, and **agent-friendly automation**.
 
