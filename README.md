@@ -44,6 +44,19 @@ CALDAV_PASSWORD=your-password
 - `npm run build` — compile to `dist/`
 - `npm start` — run compiled output
 
+## Architecture direction
+
+This repo should converge toward the same layered CLI architecture as `threads-cli`:
+
+- `src/app/commands/*` — CLI contract layer
+- `src/app/use-cases/*` — orchestration layer
+- `src/domain/*` — calendar/event domain logic
+- `src/infra/*` — CalDAV adapters, env config, ICS parsing
+- `src/presentation/*` — text/json renderers
+- `src/shared/*` — tiny cross-cutting helpers
+
+The target module boundaries and migration plan live in `docs/architecture.md`.
+
 ## Output behavior
 
 - If `CALDAV_CALENDAR_NAME` is omitted, the first discovered calendar is used.
