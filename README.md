@@ -36,6 +36,13 @@ Most CalDAV tooling is either too low-level for agents or too UI-centric for aut
 
 ## Install
 
+### From npm
+
+```bash
+npm install -g @cayde-6/icalendar
+icalendar --help
+```
+
 ### From source
 
 ```bash

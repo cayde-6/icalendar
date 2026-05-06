@@ -26,6 +26,7 @@ Each release should record:
 4. If live credentials exist, trigger `Smoke iCloud CalDAV`
 5. Tag the release as `vX.Y.Z`
 6. Push the tag
+7. If npm publishing is enabled, publish `@cayde-6/icalendar` with public access
 
 ## CLI compatibility promise
 
