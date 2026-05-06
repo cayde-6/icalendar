@@ -1,5 +1,8 @@
 # icalendar
 
+[![CI](https://github.com/cayde-6/icalendar/actions/workflows/ci.yml/badge.svg)](https://github.com/cayde-6/icalendar/actions/workflows/ci.yml)
+[![Release](https://github.com/cayde-6/icalendar/actions/workflows/release.yml/badge.svg)](https://github.com/cayde-6/icalendar/actions/workflows/release.yml)
+
 ![icalendar hero](./assets/hero.svg)
 
 Production-ready TypeScript CLI for **CalDAV calendars**, **iCalendar events**, and **agent-friendly automation**.
@@ -187,6 +190,7 @@ The CalDAV SDK stays in `infra/`, use-cases orchestrate, domain stays provider-a
 - [Agent integration guide](./docs/agent-integration.md)
 - [Architecture](./docs/architecture.md)
 - [Release checklist](./docs/release-checklist.md)
+- GitHub Actions: `.github/workflows/ci.yml`, `.github/workflows/release.yml`
 
 ## License
 
