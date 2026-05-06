@@ -25,8 +25,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "node --import tsx --test test/**/*.test.ts",
-    "test:coverage": "c8 --reporter=text --reporter=lcov node --import tsx --test test/**/*.test.ts",
+    "test": "bash -lc 'node --import tsx --test $(find test -name \"*.test.ts\" -print)'",
+    "test:coverage": "bash -lc 'c8 --reporter=text --reporter=lcov node --import tsx --test $(find test -name \"*.test.ts\" -print)'",
     "build": "tsup src/cli.ts src/index.ts --format esm --dts --clean",
     "dev": "tsx src/cli.ts",
     "check": "tsc --noEmit -p tsconfig.json",

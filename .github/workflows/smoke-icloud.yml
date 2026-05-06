@@ -7,7 +7,7 @@ on:
 
 jobs:
   smoke:
-    if: ${{ secrets.CALDAV_SERVER_URL != '' && secrets.CALDAV_USERNAME != '' && secrets.CALDAV_PASSWORD != '' }}
+    if: ${{ github.event_name != 'push' && secrets.CALDAV_SERVER_URL != '' && secrets.CALDAV_USERNAME != '' && secrets.CALDAV_PASSWORD != '' }}
     runs-on: ubuntu-latest
     env:
       CALDAV_SERVER_URL: ${{ secrets.CALDAV_SERVER_URL }}
