@@ -7,7 +7,6 @@ on:
 
 jobs:
   smoke:
-    if: ${{ github.event_name != 'push' && secrets.CALDAV_SERVER_URL != '' && secrets.CALDAV_USERNAME != '' && secrets.CALDAV_PASSWORD != '' }}
     runs-on: ubuntu-latest
     env:
       CALDAV_SERVER_URL: ${{ secrets.CALDAV_SERVER_URL }}
@@ -25,6 +24,14 @@ jobs:
         with:
           node-version: 22
           cache: npm
+
+      - name: Ensure required secrets exist
+        shell: bash
+        run: |
+          if [[ -z "$CALDAV_SERVER_URL" || -z "$CALDAV_USERNAME" || -z "$CALDAV_PASSWORD" ]]; then
+            echo "Smoke workflow skipped: required CalDAV secrets are not configured."
+            exit 0
+          fi
 
       - name: Install dependencies
         run: npm ci
