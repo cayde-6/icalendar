@@ -84,9 +84,32 @@ CALDAV_RANGE_END=2026-05-08T00:00:00+02:00
 CALDAV_EXPAND_RECURRING=true
 ```
 
-### iCloud note
+### iCloud setup: generate an app-specific password
 
-For iCloud you need an **app-specific password**. Your normal Apple ID password is not enough.
+For iCloud CalDAV you need an **app-specific password**. Your normal Apple ID password will not work.
+
+How to generate it:
+
+1. Go to your Apple account settings: <https://account.apple.com/>
+2. Sign in with the Apple account that owns the iCloud calendar
+3. Open the **Sign-In and Security** section
+4. Find **App-Specific Passwords**
+5. Create a new password, for example named `icalendar`
+6. Copy the generated password and put it into:
+
+```env
+CALDAV_PASSWORD=your-app-specific-password
+```
+
+Recommended iCloud values:
+
+```env
+CALDAV_SERVER_URL=https://caldav.icloud.com/
+CALDAV_USERNAME=your-apple-id-email@example.com
+CALDAV_PASSWORD=your-app-specific-password
+```
+
+If authentication fails, the most common cause is using the normal Apple ID password instead of the generated app-specific one.
 
 ## Quick examples
 
