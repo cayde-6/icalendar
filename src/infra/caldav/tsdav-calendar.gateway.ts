@@ -1,4 +1,7 @@
-import * as tsdav from 'tsdav'
+import crypto from 'node:crypto'
+
+import tsdav from 'tsdav'
+import type { DAVCalendar, DAVCalendarObject } from 'tsdav'
 import type { CalendarGatewayPort, CreateEventInput, DeleteEventInput, ListEventsInput, UpdateEventInput } from '../../app/ports/calendar-gateway.port.js'
 import type { RuntimeConfig } from '../../app/ports/config-reader.port.js'
 import type { Calendar } from '../../domain/calendars/calendar.js'
@@ -7,7 +10,9 @@ import type { EventMutationResult } from '../../domain/events/event-draft.js'
 import { buildEventIcs } from '../../domain/events/ics.js'
 import { parseCalendarEvent } from '../parsing/ics-parser.js'
 
-const toCalendar = (calendar: tsdav.DAVCalendar): Calendar => ({
+const { createDAVClient } = tsdav as unknown as { createDAVClient: typeof tsdav.createDAVClient }
+
+const toCalendar = (calendar: DAVCalendar): Calendar => ({
   id: calendar.url,
   displayName: String(calendar.displayName ?? 'Untitled'),
   url: calendar.url,
@@ -19,7 +24,7 @@ export class TsdavCalendarGateway implements CalendarGatewayPort {
   private clientPromise
 
   constructor(private readonly config: RuntimeConfig) {
-    this.clientPromise = tsdav.createDAVClient({
+    this.clientPromise = createDAVClient({
       serverUrl: config.serverUrl,
       credentials: {
         username: config.username,
@@ -49,7 +54,7 @@ export class TsdavCalendarGateway implements CalendarGatewayPort {
       expand: input.expandRecurring,
     })
 
-    return objects.map((object: tsdav.DAVCalendarObject) => parseCalendarEvent(object.data, object.url))
+    return objects.map((object: DAVCalendarObject) => parseCalendarEvent(object.data, object.url))
   }
 
   async createEvent(input: CreateEventInput): Promise<EventMutationResult> {
@@ -59,7 +64,7 @@ export class TsdavCalendarGateway implements CalendarGatewayPort {
     const iCalString = buildEventIcs(input.draft)
 
     await client.createCalendarObject({
-      calendar: { url: input.calendar.url } as tsdav.DAVCalendar,
+      calendar: { url: input.calendar.url } as DAVCalendar,
       filename,
       iCalString,
     })
@@ -72,7 +77,7 @@ export class TsdavCalendarGateway implements CalendarGatewayPort {
     const iCalString = buildEventIcs(input.update)
 
     await client.updateCalendarObject({
-      calendarObject: { url: input.update.url, data: iCalString } as tsdav.DAVCalendarObject,
+      calendarObject: { url: input.update.url, data: iCalString } as DAVCalendarObject,
     })
 
     return { ok: true, calendarName: calendarDisplayName(input.calendar), url: input.update.url }
@@ -80,7 +85,7 @@ export class TsdavCalendarGateway implements CalendarGatewayPort {
 
   async deleteEvent(input: DeleteEventInput): Promise<EventMutationResult> {
     const client = await this.clientPromise
-    await client.deleteCalendarObject({ calendarObject: { url: input.url } as tsdav.DAVCalendarObject })
+    await client.deleteCalendarObject({ calendarObject: { url: input.url } as DAVCalendarObject })
     return { ok: true, calendarName: calendarDisplayName(input.calendar), url: input.url }
   }
 }
