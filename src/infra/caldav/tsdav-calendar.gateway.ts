@@ -11,6 +11,7 @@ import { buildEventIcs } from '../../domain/events/ics.js'
 import { parseCalendarEvent } from '../parsing/ics-parser.js'
 
 const { createDAVClient } = tsdav as unknown as { createDAVClient: typeof tsdav.createDAVClient }
+const ORGANIZER_COMMON_NAME = 'Bender'
 
 const toCalendar = (calendar: DAVCalendar): Calendar => ({
   id: calendar.url,
@@ -61,7 +62,7 @@ export class TsdavCalendarGateway implements CalendarGatewayPort {
     const client = await this.clientPromise
     const filename = `${crypto.randomUUID()}.ics`
     const objectUrl = new URL(filename, input.calendar.url.endsWith('/') ? input.calendar.url : `${input.calendar.url}/`).toString()
-    const iCalString = buildEventIcs(input.draft, undefined, this.config.username)
+    const iCalString = buildEventIcs(input.draft, undefined, this.config.username, ORGANIZER_COMMON_NAME)
 
     await client.createCalendarObject({
       calendar: { url: input.calendar.url } as DAVCalendar,
@@ -74,7 +75,7 @@ export class TsdavCalendarGateway implements CalendarGatewayPort {
 
   async updateEvent(input: UpdateEventInput): Promise<EventMutationResult> {
     const client = await this.clientPromise
-    const iCalString = buildEventIcs(input.update, undefined, this.config.username)
+    const iCalString = buildEventIcs(input.update, undefined, this.config.username, ORGANIZER_COMMON_NAME)
 
     await client.updateCalendarObject({
       calendarObject: { url: input.update.url, data: iCalString } as DAVCalendarObject,

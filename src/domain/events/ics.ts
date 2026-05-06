@@ -23,7 +23,20 @@ const renderAttendee = (attendee: EventAttendee): string => {
   return `ATTENDEE;${params.join(';')}:mailto:${attendee.email}`
 }
 
-export const buildEventIcs = (draft: EventDraft, uid = crypto.randomUUID(), organizerEmail?: string): string => {
+const renderOrganizer = (organizerEmail: string, organizerCommonName?: string): string => {
+  if (organizerCommonName) {
+    return `ORGANIZER;CN=${escapeText(organizerCommonName)}:mailto:${organizerEmail}`
+  }
+
+  return `ORGANIZER:mailto:${organizerEmail}`
+}
+
+export const buildEventIcs = (
+  draft: EventDraft,
+  uid = crypto.randomUUID(),
+  organizerEmail?: string,
+  organizerCommonName?: string,
+): string => {
   const now = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z')
   const lines = [
     'BEGIN:VCALENDAR',
@@ -40,7 +53,7 @@ export const buildEventIcs = (draft: EventDraft, uid = crypto.randomUUID(), orga
     `SUMMARY:${escapeText(draft.summary)}`,
   ]
 
-  if (organizerEmail) lines.push(`ORGANIZER:mailto:${organizerEmail}`)
+  if (organizerEmail) lines.push(renderOrganizer(organizerEmail, organizerCommonName))
   if (draft.description) lines.push(`DESCRIPTION:${escapeText(draft.description)}`)
   if (draft.location) lines.push(`LOCATION:${escapeText(draft.location)}`)
   for (const attendee of draft.attendees || []) lines.push(renderAttendee(attendee))
