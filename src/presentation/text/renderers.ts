@@ -3,29 +3,23 @@ import type { ListEventsResult } from '../../app/use-cases/events/list-events.js
 import type { EventMutationResult } from '../../domain/events/event-draft.js'
 
 export const renderCalendarsText = (result: ListCalendarsResult): string => {
-  if (result.calendars.length === 0) return 'No calendars found.'
+  if (result.calendars.length === 0) return 'calendars list: 0 item(s)'
 
-  return ['Calendars:', ...result.calendars.map((calendar) => `- ${calendar.displayName} (${calendar.url})`)].join('\n')
+  return [
+    `calendars list: ${result.count} item(s)`,
+    ...result.calendars.map((calendar) => `- ${calendar.displayName} (${calendar.url})`),
+  ].join('\n')
 }
 
 export const renderEventsText = (result: ListEventsResult): string => {
   const lines: string[] = []
 
-  if (result.calendars.length === 0) {
-    return 'No calendars found.'
-  }
+  lines.push(`events list: ${result.count} item(s)`)
 
-  lines.push('Calendars:')
-  for (const calendar of result.calendars) {
-    lines.push(`- ${calendar.displayName} (${calendar.url})`)
+  if (result.selectedCalendar) {
+    const rangeLabel = result.timeRange ? ` | range ${result.timeRange.start} → ${result.timeRange.end}` : ''
+    lines.push(`calendar: ${result.selectedCalendar.displayName}${rangeLabel}`)
   }
-
-  if (!result.selectedCalendar) {
-    return lines.join('\n')
-  }
-
-  const rangeLabel = result.timeRange ? ` for ${result.timeRange.start} → ${result.timeRange.end}` : ''
-  lines.push('', `Events in ${result.selectedCalendar.displayName}${rangeLabel}:`)
 
   if (result.events.length === 0) {
     lines.push('- No events found.')
@@ -33,7 +27,11 @@ export const renderEventsText = (result: ListEventsResult): string => {
   }
 
   for (const event of result.events) {
-    lines.push(`- ${event.summary} | ${event.start ?? 'unknown start'} | ${event.url}`)
+    lines.push(`- summary: ${event.summary}`)
+    lines.push(`  start: ${event.start ?? '-'}`)
+    lines.push(`  end: ${event.end ?? '-'}`)
+    lines.push(`  location: ${event.location ?? '-'}`)
+    lines.push(`  url: ${event.url}`)
   }
 
   return lines.join('\n')

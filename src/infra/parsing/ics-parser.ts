@@ -23,6 +23,9 @@ export const parseCalendarEvent = (raw: unknown, url: string): CalendarEvent => 
   return {
     summary: readIcsField(ics, 'SUMMARY') ?? 'Untitled event',
     start: readIcsField(ics, 'DTSTART'),
+    end: readIcsField(ics, 'DTEND'),
+    description: readIcsField(ics, 'DESCRIPTION'),
+    location: readIcsField(ics, 'LOCATION'),
     url,
   }
 }

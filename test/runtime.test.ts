@@ -38,7 +38,7 @@ test('runCommand handles calendars list', async () => {
     assert.equal(handled, true)
   })
 
-  assert.match(output, /Calendars:/)
+  assert.match(output, /calendars list: 1 item\(s\)/)
   assert.match(output, /Personal/)
 })
 
