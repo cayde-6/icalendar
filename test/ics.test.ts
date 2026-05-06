@@ -15,9 +15,9 @@ test('buildEventIcs renders organizer CN and attendees', () => {
   }, 'uid-1', 'primary.attendee@example.test', 'Bender')
 
   assert.match(ics, /METHOD:REQUEST/)
-  assert.match(ics, /ORGANIZER;CN=Bender:mailto:alex@example\.com/)
-  assert.match(ics, /ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:alex@example\.com/)
-  assert.match(ics, /ATTENDEE;CN=Anna;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:jamie@example\.com/)
+  assert.match(ics, /ORGANIZER;CN=Bender:mailto:primary\.attendee@example\.test/)
+  assert.match(ics, /ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:primary\.attendee@example\.test/)
+  assert.match(ics, /ATTENDEE;CN=Anna;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:secondary\.attendee@example\.test/)
 })
 
 test('parseCalendarEvent reads unfolded ICS fields', () => {
