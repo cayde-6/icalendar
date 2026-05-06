@@ -229,6 +229,15 @@ The CalDAV SDK stays in `infra/`, use-cases orchestrate, domain stays provider-a
 
 MIT
 
+## npm publish automation
+
+Releases can publish automatically to npm when the repository secret `NPM_TOKEN` is configured.
+
+Expected secret:
+- `NPM_TOKEN`
+
+The release workflow publishes `@cayde-6/icalendar` after verify passes for a pushed `v*` tag.
+
 ## Live smoke workflow
 
 A dedicated GitHub Actions workflow is included for optional live CalDAV validation through repository secrets.

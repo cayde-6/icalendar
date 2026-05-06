@@ -33,6 +33,11 @@ jobs:
           mkdir -p release
           tar -czf release/icalendar-${GITHUB_REF_NAME}.tgz dist README.md LICENSE package.json docs assets
 
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
+
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
