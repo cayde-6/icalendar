@@ -1,0 +1,22 @@
+<svg width="1280" height="900" viewBox="0 0 1280 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1280" height="900" fill="#0A0F1E"/>
+  <rect x="48" y="40" width="1184" height="820" rx="24" fill="#0F172A" stroke="#23314F"/>
+  <circle cx="92" cy="78" r="8" fill="#F87171"/>
+  <circle cx="118" cy="78" r="8" fill="#FBBF24"/>
+  <circle cx="144" cy="78" r="8" fill="#34D399"/>
+  <text x="180" y="86" fill="#94A3B8" font-family="ui-monospace,Menlo,monospace" font-size="22">terminal — icalendar live invite flow</text>
+  <text x="84" y="156" fill="#60A5FA" font-family="ui-monospace,Menlo,monospace" font-size="28">$ icalendar calendars list --json</text>
+  <text x="84" y="204" fill="#D7E3FF" font-family="ui-monospace,Menlo,monospace" font-size="24">{</text>
+  <text x="116" y="242" fill="#D7E3FF" font-family="ui-monospace,Menlo,monospace" font-size="24">"ok": true,</text>
+  <text x="116" y="280" fill="#D7E3FF" font-family="ui-monospace,Menlo,monospace" font-size="24">"count": 6,</text>
+  <text x="116" y="318" fill="#D7E3FF" font-family="ui-monospace,Menlo,monospace" font-size="24">"calendars": ["OpenClaw Test", "Family", "Work"]</text>
+  <text x="84" y="356" fill="#D7E3FF" font-family="ui-monospace,Menlo,monospace" font-size="24">}</text>
+  <text x="84" y="442" fill="#60A5FA" font-family="ui-monospace,Menlo,monospace" font-size="28">$ icalendar events create --summary "Family sync" ...</text>
+  <text x="84" y="490" fill="#34D399" font-family="ui-monospace,Menlo,monospace" font-size="24">events create: done</text>
+  <text x="84" y="528" fill="#D7E3FF" font-family="ui-monospace,Menlo,monospace" font-size="24">calendar: OpenClaw Test</text>
+  <text x="84" y="566" fill="#D7E3FF" font-family="ui-monospace,Menlo,monospace" font-size="24">organizer: Bender</text>
+  <text x="84" y="604" fill="#D7E3FF" font-family="ui-monospace,Menlo,monospace" font-size="24">attendees: primary.attendee@example.test, secondary.attendee@example.test</text>
+  <text x="84" y="690" fill="#60A5FA" font-family="ui-monospace,Menlo,monospace" font-size="28">$ icalendar events delete &lt;url&gt;</text>
+  <text x="84" y="738" fill="#34D399" font-family="ui-monospace,Menlo,monospace" font-size="24">events delete: done</text>
+  <text x="84" y="800" fill="#94A3B8" font-family="Inter,Arial,sans-serif" font-size="22">Live-tested against iCloud CalDAV • JSON-friendly • agent-ready</text>
+</svg>

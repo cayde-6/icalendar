@@ -5,6 +5,8 @@
 
 ![icalendar hero](./assets/hero.svg)
 
+![icalendar demo](./assets/demo.svg)
+
 Production-ready TypeScript CLI for **CalDAV calendars**, **iCalendar events**, and **agent-friendly automation**.
 
 `icalendar` gives agents and scripts a thin, reliable interface for:
@@ -190,8 +192,25 @@ The CalDAV SDK stays in `infra/`, use-cases orchestrate, domain stays provider-a
 - [Agent integration guide](./docs/agent-integration.md)
 - [Architecture](./docs/architecture.md)
 - [Release checklist](./docs/release-checklist.md)
-- GitHub Actions: `.github/workflows/ci.yml`, `.github/workflows/release.yml`
+- [Versioning policy](./docs/versioning.md)
+- [Changelog](./CHANGELOG.md)
+- GitHub Actions: `.github/workflows/ci.yml`, `.github/workflows/release.yml`, `.github/workflows/smoke-icloud.yml`
 
 ## License
 
 MIT
+
+## Live smoke workflow
+
+A dedicated GitHub Actions workflow is included for optional live CalDAV validation through repository secrets.
+
+Required secrets:
+- `CALDAV_SERVER_URL`
+- `CALDAV_USERNAME`
+- `CALDAV_PASSWORD`
+
+Optional secrets:
+- `CALDAV_CALENDAR_NAME`
+- `CALDAV_ORGANIZER_NAME`
+
+The workflow creates a temporary event, updates it, and deletes it in the end.

@@ -1,0 +1,36 @@
+name: Smoke iCloud CalDAV
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * *'
+
+jobs:
+  smoke:
+    if: ${{ secrets.CALDAV_SERVER_URL != '' && secrets.CALDAV_USERNAME != '' && secrets.CALDAV_PASSWORD != '' }}
+    runs-on: ubuntu-latest
+    env:
+      CALDAV_SERVER_URL: ${{ secrets.CALDAV_SERVER_URL }}
+      CALDAV_USERNAME: ${{ secrets.CALDAV_USERNAME }}
+      CALDAV_PASSWORD: ${{ secrets.CALDAV_PASSWORD }}
+      CALDAV_CALENDAR_NAME: ${{ secrets.CALDAV_CALENDAR_NAME }}
+      CALDAV_ORGANIZER_NAME: ${{ secrets.CALDAV_ORGANIZER_NAME }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Smoke test CalDAV create -> update -> delete
+        run: node .github/scripts/smoke-icloud.mjs
