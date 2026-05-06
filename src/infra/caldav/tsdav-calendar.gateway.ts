@@ -61,7 +61,7 @@ export class TsdavCalendarGateway implements CalendarGatewayPort {
     const client = await this.clientPromise
     const filename = `${crypto.randomUUID()}.ics`
     const objectUrl = new URL(filename, input.calendar.url.endsWith('/') ? input.calendar.url : `${input.calendar.url}/`).toString()
-    const iCalString = buildEventIcs(input.draft)
+    const iCalString = buildEventIcs(input.draft, undefined, this.config.username)
 
     await client.createCalendarObject({
       calendar: { url: input.calendar.url } as DAVCalendar,
@@ -74,7 +74,7 @@ export class TsdavCalendarGateway implements CalendarGatewayPort {
 
   async updateEvent(input: UpdateEventInput): Promise<EventMutationResult> {
     const client = await this.clientPromise
-    const iCalString = buildEventIcs(input.update)
+    const iCalString = buildEventIcs(input.update, undefined, this.config.username)
 
     await client.updateCalendarObject({
       calendarObject: { url: input.update.url, data: iCalString } as DAVCalendarObject,

@@ -25,7 +25,7 @@ test('events create delegates to gateway', async () => {
     async deleteEvent() { throw new Error('unexpected') },
   }
 
-  const result = await runEventsCreateCommand(gateway, config, ['events','create','--summary','Demo','--start','2026-05-06T10:00:00Z','--end','2026-05-06T11:00:00Z'])
+  const result = await runEventsCreateCommand(gateway, config, ['events','create','--summary','Demo','--start','2026-05-06T10:00:00Z','--end','2026-05-06T11:00:00Z','--attendees','primary.attendee@example.test'])
   assert.equal(receivedSummary, 'Demo')
   assert.equal(result.url, 'created-url')
 })
