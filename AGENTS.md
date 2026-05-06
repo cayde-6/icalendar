@@ -26,7 +26,12 @@ TypeScript CalDAV / iCalendar tooling.
    - `.env` must stay untracked.
    - If new config keys are introduced, update `.env.example` with placeholders, not real values.
 
-6. **Before commit**
+6. **iCloud auth rule**
+   - For Apple / iCloud CalDAV, always use an **app-specific password**.
+   - Never document, suggest, or test with a normal Apple ID password.
+   - Public examples must use template placeholders like `primary.attendee@example.test`, `secondary.attendee@example.test`, `OpenClaw Test`, and `https://caldav.example.com/`.
+
+7. **Before commit**
    - Review staged diff for secrets or personal calendar data.
    - Search for `PASSWORD`, `Authorization`, `BEGIN:VCALENDAR`, attendee emails, and meeting URLs if relevant.
 
