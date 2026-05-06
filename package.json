@@ -12,15 +12,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Les-Reveurs/icalendar.git"
+    "url": "git+https://github.com/cayde-6/icalendar.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Les-Reveurs/icalendar/issues"
+    "url": "https://github.com/cayde-6/icalendar/issues"
   },
-  "homepage": "https://github.com/Les-Reveurs/icalendar#readme",
+  "homepage": "https://github.com/cayde-6/icalendar#readme",
   "private": "false",
   "type": "module",
   "types": "dist/index.d.ts",
