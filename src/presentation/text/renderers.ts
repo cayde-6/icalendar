@@ -1,5 +1,6 @@
 import type { ListCalendarsResult } from '../../app/use-cases/calendars/list-calendars.js'
 import type { ListEventsResult } from '../../app/use-cases/events/list-events.js'
+import type { EventMutationResult } from '../../domain/events/event-draft.js'
 
 export const renderCalendarsText = (result: ListCalendarsResult): string => {
   if (result.calendars.length === 0) return 'No calendars found.'
@@ -36,4 +37,12 @@ export const renderEventsText = (result: ListEventsResult): string => {
   }
 
   return lines.join('\n')
+}
+
+export const renderEventMutationText = (action: 'create' | 'update' | 'delete', result: EventMutationResult): string => {
+  return [
+    `events ${action}: done`,
+    `calendar: ${result.calendarName}`,
+    `url: ${result.url}`,
+  ].join('\n')
 }

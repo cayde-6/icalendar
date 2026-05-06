@@ -2,7 +2,10 @@ import type { CalendarGatewayPort } from '../ports/calendar-gateway.port.js'
 import type { RuntimeConfig } from '../ports/config-reader.port.js'
 import { runCalendarsListCommand } from './calendars/list.command.js'
 import { runEventsListCommand } from './events/list.command.js'
-import { renderCalendarsText, renderEventsText } from '../../presentation/text/renderers.js'
+import { runEventsCreateCommand } from './events/create.command.js'
+import { runEventsUpdateCommand } from './events/update.command.js'
+import { runEventsDeleteCommand } from './events/delete.command.js'
+import { renderCalendarsText, renderEventMutationText, renderEventsText } from '../../presentation/text/renderers.js'
 import { renderJson } from '../../presentation/json/renderers.js'
 import { CliError } from '../../shared/errors/cli-error.js'
 
@@ -52,6 +55,24 @@ export const runCommand = async ({ gateway, config, args }: RuntimeDeps): Promis
   if (args[0] === 'events' && args[1] === 'list') {
     const result = await runEventsListCommand(gateway, config)
     print(args, result, renderEventsText)
+    return true
+  }
+
+  if (args[0] === 'events' && args[1] === 'create') {
+    const result = await runEventsCreateCommand(gateway, config, args)
+    print(args, result, (value) => renderEventMutationText('create', value))
+    return true
+  }
+
+  if (args[0] === 'events' && args[1] === 'update') {
+    const result = await runEventsUpdateCommand(gateway, config, args)
+    print(args, result, (value) => renderEventMutationText('update', value))
+    return true
+  }
+
+  if (args[0] === 'events' && args[1] === 'delete') {
+    const result = await runEventsDeleteCommand(gateway, config, args)
+    print(args, result, (value) => renderEventMutationText('delete', value))
     return true
   }
 

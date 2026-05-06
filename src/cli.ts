@@ -7,10 +7,18 @@ import { runCommand, printError } from './app/commands/runtime.js'
 const cli = cac('icalendar')
 cli.command('calendars list', 'list available calendars')
 cli.command('events list', 'list events for selected calendar/time range')
+cli.command('events create', 'create calendar event')
+cli.command('events update', 'update calendar event')
+cli.command('events delete [url]', 'delete calendar event')
 cli.help()
 cli.version('0.1.0')
 
 export const runCli = async (args = process.argv.slice(2)) => {
+  if (args.includes('--help') || args.includes('-h') || args.includes('--version') || args.includes('-v')) {
+    cli.parse()
+    return
+  }
+
   const configReader = new EnvConfigReader()
   const config = configReader.readRuntimeConfig()
   const gateway = new TsdavCalendarGateway(config)
