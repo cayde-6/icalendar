@@ -32,16 +32,18 @@ test('events create delegates to gateway', async () => {
 
 test('events update delegates to gateway', async () => {
   let receivedUrl = ''
+  let receivedAttendees: unknown
   const gateway: CalendarGatewayPort = {
     async listCalendars() { return [calendar] },
     async listEvents() { return [] },
     async createEvent() { throw new Error('unexpected') },
-    async updateEvent(input) { receivedUrl = input.update.url; return { ok: true, calendarName: input.calendar.displayName, url: input.update.url } },
+    async updateEvent(input) { receivedUrl = input.update.url; receivedAttendees = input.update.attendees; return { ok: true, calendarName: input.calendar.displayName, url: input.update.url } },
     async deleteEvent() { throw new Error('unexpected') },
   }
 
-  const result = await runEventsUpdateCommand(gateway, config, ['events','update','--url','event-url','--summary','Demo','--start','2026-05-06T10:00:00Z','--end','2026-05-06T11:00:00Z'])
+  const result = await runEventsUpdateCommand(gateway, config, ['events','update','--url','event-url','--summary','Demo','--start','2026-05-06T10:00:00Z','--end','2026-05-06T11:00:00Z','--attendees','primary.attendee@example.test'])
   assert.equal(receivedUrl, 'event-url')
+  assert.deepEqual(receivedAttendees, [{ email: 'primary.attendee@example.test' }])
   assert.equal(result.url, 'event-url')
 })
 
