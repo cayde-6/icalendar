@@ -11,6 +11,7 @@ const config: RuntimeConfig = {
   serverUrl: 'https://caldav.example.com',
   username: 'user',
   password: 'pass',
+  organizerName: 'Bender',
 }
 
 const calendar = { id: '1', displayName: 'Personal', url: 'https://example.com/personal' }

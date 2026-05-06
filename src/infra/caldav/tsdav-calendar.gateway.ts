@@ -1,39 +1,20 @@
-import crypto from 'node:crypto'
+import type { DAVCalendarObject } from 'tsdav'
 
-import tsdav from 'tsdav'
-import type { DAVCalendar, DAVCalendarObject } from 'tsdav'
 import type { CalendarGatewayPort, CreateEventInput, DeleteEventInput, ListEventsInput, UpdateEventInput } from '../../app/ports/calendar-gateway.port.js'
 import type { RuntimeConfig } from '../../app/ports/config-reader.port.js'
 import type { Calendar } from '../../domain/calendars/calendar.js'
 import type { CalendarEvent } from '../../domain/events/calendar-event.js'
 import type { EventMutationResult } from '../../domain/events/event-draft.js'
-import { buildEventIcs } from '../../domain/events/ics.js'
 import { parseCalendarEvent } from '../parsing/ics-parser.js'
-
-const { createDAVClient } = tsdav as unknown as { createDAVClient: typeof tsdav.createDAVClient }
-const ORGANIZER_COMMON_NAME = 'Bender'
-
-const toCalendar = (calendar: DAVCalendar): Calendar => ({
-  id: calendar.url,
-  displayName: String(calendar.displayName ?? 'Untitled'),
-  url: calendar.url,
-})
-
-const calendarDisplayName = (calendar: Calendar) => calendar.displayName || 'Untitled'
+import { calendarDisplayName, toCalendar } from './calendar-mapper.js'
+import { createCaldavClient } from './client.js'
+import { EventObjectService } from './event-object.service.js'
 
 export class TsdavCalendarGateway implements CalendarGatewayPort {
-  private clientPromise
+  private readonly clientPromise
 
   constructor(private readonly config: RuntimeConfig) {
-    this.clientPromise = createDAVClient({
-      serverUrl: config.serverUrl,
-      credentials: {
-        username: config.username,
-        password: config.password,
-      },
-      authMethod: 'Basic',
-      defaultAccountType: 'caldav',
-    })
+    this.clientPromise = createCaldavClient(config)
   }
 
   async listCalendars(): Promise<Calendar[]> {
@@ -60,33 +41,34 @@ export class TsdavCalendarGateway implements CalendarGatewayPort {
 
   async createEvent(input: CreateEventInput): Promise<EventMutationResult> {
     const client = await this.clientPromise
-    const filename = `${crypto.randomUUID()}.ics`
-    const objectUrl = new URL(filename, input.calendar.url.endsWith('/') ? input.calendar.url : `${input.calendar.url}/`).toString()
-    const iCalString = buildEventIcs(input.draft, undefined, this.config.username, ORGANIZER_COMMON_NAME)
-
-    await client.createCalendarObject({
-      calendar: { url: input.calendar.url } as DAVCalendar,
-      filename,
-      iCalString,
+    const service = new EventObjectService(client, {
+      organizerEmail: this.config.username,
+      organizerCommonName: this.config.organizerName,
     })
 
-    return { ok: true, calendarName: calendarDisplayName(input.calendar), url: objectUrl }
+    const url = await service.create(input.calendar, input.draft)
+    return { ok: true, calendarName: calendarDisplayName(input.calendar), url }
   }
 
   async updateEvent(input: UpdateEventInput): Promise<EventMutationResult> {
     const client = await this.clientPromise
-    const iCalString = buildEventIcs(input.update, undefined, this.config.username, ORGANIZER_COMMON_NAME)
-
-    await client.updateCalendarObject({
-      calendarObject: { url: input.update.url, data: iCalString } as DAVCalendarObject,
+    const service = new EventObjectService(client, {
+      organizerEmail: this.config.username,
+      organizerCommonName: this.config.organizerName,
     })
 
+    await service.update(input.update)
     return { ok: true, calendarName: calendarDisplayName(input.calendar), url: input.update.url }
   }
 
   async deleteEvent(input: DeleteEventInput): Promise<EventMutationResult> {
     const client = await this.clientPromise
-    await client.deleteCalendarObject({ calendarObject: { url: input.url } as DAVCalendarObject })
+    const service = new EventObjectService(client, {
+      organizerEmail: this.config.username,
+      organizerCommonName: this.config.organizerName,
+    })
+
+    await service.delete(input.url)
     return { ok: true, calendarName: calendarDisplayName(input.calendar), url: input.url }
   }
 }

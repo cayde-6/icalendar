@@ -1,71 +1,193 @@
 # icalendar
 
-TypeScript starter for working with **CalDAV** calendars and iCalendar data.
+![icalendar hero](./assets/hero.svg)
 
-## Stack
+Production-ready TypeScript CLI for **CalDAV calendars**, **iCalendar events**, and **agent-friendly automation**.
 
-- Node.js
-- TypeScript
-- [`tsdav`](https://www.npmjs.com/package/tsdav) for CalDAV access
-- `zod` for env validation
+`icalendar` gives agents and scripts a thin, reliable interface for:
+- listing calendars
+- listing events
+- creating events
+- updating events
+- deleting events
+- sending attendee invites through CalDAV/iCalendar
+- setting a friendly organizer display name (for example `Bender`)
 
-## Quick start
+It was validated live against **real iCloud CalDAV** with create → update → invite → delete flows.
+
+## Why this exists
+
+Most CalDAV tooling is either too low-level for agents or too UI-centric for automation. This repo wraps the ugly parts behind a small CLI and a layered codebase that is easy to embed, extend, and reason about.
+
+## Features
+
+- ESM TypeScript CLI with clean layering
+- CalDAV access via `tsdav`
+- invite-ready ICS generation
+- attendee support for create/update flows
+- configurable organizer common name via env
+- text and JSON output modes
+- runtime-safe handling of `--help` / `--version`
+- live-tested against iCloud CalDAV
+
+## Install
+
+### From source
 
 ```bash
+git clone https://github.com/cayde-6/icalendar.git
+cd icalendar
 npm install
-cp .env.example .env
-npm run dev
+npm run build
 ```
 
-Fill in your CalDAV credentials in `.env`:
+### Use as a local CLI
+
+```bash
+npm link
+icalendar --help
+```
+
+### Use without linking
+
+```bash
+node --import tsx src/cli.ts --help
+node dist/cli.js calendars list
+```
+
+## Configuration
+
+Copy the example file:
+
+```bash
+cp .env.example .env
+```
+
+Required configuration:
 
 ```env
-CALDAV_SERVER_URL=https://caldav.example.com/
-CALDAV_USERNAME=your-username
-CALDAV_PASSWORD=your-password
-# optional:
-# CALDAV_CALENDAR_NAME=Personal
-# CALDAV_RANGE_START=2026-05-03T00:00:00+02:00
-# CALDAV_RANGE_END=2026-05-10T00:00:00+02:00
-# CALDAV_EXPAND_RECURRING=true
+CALDAV_SERVER_URL=https://caldav.icloud.com/
+CALDAV_USERNAME=primary.attendee@example.test
+CALDAV_PASSWORD=app-specific-password
 ```
 
-## What it does now
+Optional configuration:
 
-- connects to a CalDAV server
-- fetches available calendars
-- prints them to stdout
-- fetches calendar events for a selected calendar and optional time range
+```env
+CALDAV_CALENDAR_NAME=OpenClaw Test
+CALDAV_ORGANIZER_NAME=Bender
+CALDAV_RANGE_START=2026-05-07T00:00:00+02:00
+CALDAV_RANGE_END=2026-05-08T00:00:00+02:00
+CALDAV_EXPAND_RECURRING=true
+```
 
-## Scripts
+### iCloud note
 
-- `npm run dev` — run locally with `tsx`
-- `npm run check` — type-check
-- `npm run build` — compile to `dist/`
-- `npm start` — run compiled output
+For iCloud you need an **app-specific password**. Your normal Apple ID password is not enough.
 
-## Architecture direction
+## Quick examples
 
-This repo should converge toward the same layered CLI architecture as `threads-cli`:
+### List calendars
 
-- `src/app/commands/*` — CLI contract layer
-- `src/app/use-cases/*` — orchestration layer
-- `src/domain/*` — calendar/event domain logic
-- `src/infra/*` — CalDAV adapters, env config, ICS parsing
-- `src/presentation/*` — text/json renderers
-- `src/shared/*` — tiny cross-cutting helpers
+```bash
+icalendar calendars list
+icalendar calendars list --json
+```
 
-The target module boundaries and migration plan live in `docs/architecture.md`.
+### List events
 
-## Output behavior
+```bash
+icalendar events list
+icalendar events list --json
+```
 
-- If `CALDAV_CALENDAR_NAME` is omitted, the first discovered calendar is used.
-- If `CALDAV_RANGE_START` / `CALDAV_RANGE_END` are omitted, it fetches all visible calendar objects the server returns.
-- If only `CALDAV_RANGE_START` is set, the end defaults to 30 days later.
-- `CALDAV_EXPAND_RECURRING=true` asks the server to expand recurring events in the requested window.
+### Create an event
 
-## Next useful steps
+```bash
+icalendar events create \
+  --summary "Family sync" \
+  --start "2026-05-07T18:00:00+02:00" \
+  --end "2026-05-07T18:30:00+02:00" \
+  --description "Agenda review" \
+  --location "Belgrade" \
+  --attendees "primary.attendee@example.test,secondary.attendee@example.test"
+```
 
-1. Add create/update/delete event flows
-2. Parse richer event fields (location, attendees, recurrence)
-3. Wrap this in a small HTTP API or CLI
+### Update an event
+
+```bash
+icalendar events update \
+  --url "https://caldav.example.com/calendars/personal/event.ics" \
+  --summary "Family sync" \
+  --start "2026-05-07T18:00:00+02:00" \
+  --end "2026-05-07T18:45:00+02:00" \
+  --attendees "primary.attendee@example.test,secondary.attendee@example.test"
+```
+
+### Delete an event
+
+```bash
+icalendar events delete "https://caldav.example.com/calendars/personal/event.ics"
+```
+
+## Agent integration
+
+If another agent/session wants to adopt this CLI, start here:
+- [Agent integration guide](./docs/agent-integration.md)
+- [Architecture](./docs/architecture.md)
+
+Short version:
+1. install dependencies
+2. provide `.env`
+3. run `npm run build`
+4. use `icalendar ...` or `node dist/cli.js ...`
+5. prefer `--json` for machine consumers
+
+## Development
+
+```bash
+npm run check
+npm run build
+npm test
+npm run test:coverage
+npm run verify
+```
+
+## Test strategy
+
+Current coverage includes:
+- calendar selection rules
+- time range defaults
+- command parsing for create/update/delete
+- text/json runtime output
+- env config parsing
+- ICS generation and ICS parsing
+- runtime error rendering
+
+## Architecture
+
+`icalendar` follows the same layered structure as `threads-cli`:
+
+```text
+cli -> app(commands/use-cases) -> domain -> infra -> presentation -> shared
+```
+
+The CalDAV SDK stays in `infra/`, use-cases orchestrate, domain stays provider-agnostic, and renderers only format output.
+
+## Production-readiness notes
+
+- invite flows were smoke-tested live against iCloud CalDAV
+- `--help` and `--version` do not require env credentials
+- organizer display name is configurable with `CALDAV_ORGANIZER_NAME`
+- attendee invites work in both create and update flows
+- CLI defaults to the first calendar when `CALDAV_CALENDAR_NAME` is omitted
+
+## Repo docs
+
+- [Agent integration guide](./docs/agent-integration.md)
+- [Architecture](./docs/architecture.md)
+- [Release checklist](./docs/release-checklist.md)
+
+## License
+
+MIT

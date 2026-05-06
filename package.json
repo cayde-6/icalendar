@@ -1,42 +1,68 @@
 {
   "name": "icalendar",
   "version": "0.1.0",
-  "description": "TypeScript toolkit for working with CalDAV calendars and iCalendar data",
+  "description": "Production-ready TypeScript CLI for CalDAV calendars, iCalendar events, and agent automation",
+  "type": "module",
+  "private": false,
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "icalendar": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "assets"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "test": "node --import tsx --test test/**/*.test.ts",
+    "test:coverage": "c8 --reporter=text --reporter=lcov node --import tsx --test test/**/*.test.ts",
     "build": "tsup src/cli.ts src/index.ts --format esm --dts --clean",
     "dev": "tsx src/cli.ts",
     "check": "tsc --noEmit -p tsconfig.json",
+    "verify": "npm run check && npm run build && npm run test:coverage",
     "start": "node dist/cli.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cayde-6/icalendar.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "caldav",
+    "icalendar",
+    "ics",
+    "cli",
+    "automation",
+    "agents",
+    "icloud"
+  ],
+  "author": "cayde-6",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/cayde-6/icalendar/issues"
   },
   "homepage": "https://github.com/cayde-6/icalendar#readme",
-  "private": false,
-  "type": "module",
-  "types": "dist/index.d.ts",
   "dependencies": {
+    "cac": "^6.7.14",
     "dotenv": "^17.4.2",
     "tsdav": "^2.2.0",
-    "zod": "^4.4.1",
-    "cac": "^6.7.14"
+    "zod": "^4.4.1"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
+    "c8": "^11.0.0",
+    "tsup": "^8.5.0",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.3",
-    "tsup": "^8.5.0"
-  },
-  "bin": {
-    "icalendar": "./dist/cli.js"
+    "typescript": "^6.0.3"
   }
 }

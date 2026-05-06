@@ -9,6 +9,7 @@ const config: RuntimeConfig = {
   serverUrl: 'https://caldav.example.com',
   username: 'user',
   password: 'pass',
+  organizerName: 'Bender',
 }
 
 const gateway: CalendarGatewayPort = {

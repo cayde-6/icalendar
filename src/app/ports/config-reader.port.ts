@@ -6,6 +6,7 @@ export type RuntimeConfig = {
   rangeStart?: string
   rangeEnd?: string
   expandRecurring?: boolean
+  organizerName?: string
 }
 
 export interface ConfigReaderPort {

@@ -1,243 +1,144 @@
 # Unified CLI Architecture — icalendar
 
-## Goal
-
-`icalendar` should follow the same architectural shape as `threads-cli`.
-
-The point is not just code style symmetry. The point is to make both repos:
-
-- navigable in the same way
-- refactorable by the same rules
-- testable at the same boundaries
-- easy to extend without turning into provider-coupled spaghetti
-
-This document defines the target architecture for `icalendar`.
-
----
-
-## Architectural principles
-
-1. **Same layers in every CLI repo**
-2. **One file = one clear reason to change**
-3. **Provider SDKs stay at the edges**
-4. **Use-cases orchestrate; domain models decide**
-5. **Presentation never talks directly to CalDAV/ICS libraries**
-6. **Config parsing is not business logic**
-7. **Every external dependency sits behind a port/interface**
-
----
-
-## Target layer model
-
-### 1. Entrypoint layer
-Process boot only.
-
-Examples:
-- load env file if needed
-- boot runtime
-- wire dependencies
-- set exit code
-
-### 2. Command layer
-CLI contracts only.
-
-Examples:
-- `calendar list`
-- `events list`
-- later: `events create`, `events update`, `events delete`
-- parse args/options
-- validate command input shape
-
-### 3. Application layer
-Use-cases only.
-
-Examples:
-- `list-calendars`
-- `list-events`
-- `get-calendar`
-- later write flows
-
-Rules:
-- no raw `process.env`
-- no direct `tsdav` calls
-- no terminal formatting
-
-### 4. Domain layer
-Calendar meaning and invariants.
-
-Examples:
-- entities: `Calendar`, `CalendarEvent`
-- value objects: `CalendarName`, `CalendarUrl`, `TimeRange`, `EventSummary`
-- policies: range validation, calendar selection rules, recurrence expansion rules
-
-Rules:
-- no SDK imports
-- no stdout/stderr
-- no filesystem access
-
-### 5. Infrastructure layer
-Provider/machine-specific adapters.
-
-Examples:
-- CalDAV client adapter over `tsdav`
-- env/config loader
-- ICS parser adapter
-- local credential/config source
-
-### 6. Presentation layer
-Output renderers only.
-
-Examples:
-- calendar list renderer
-- event list renderer
-- json/text output adapters
-
-### 7. Shared layer
-Small cross-cutting primitives only.
-
-Examples:
-- errors
-- result types
-- date helpers
-- schema helpers
-
----
-
-## Canonical folder layout
-
-`icalendar` should converge toward this exact layout so it mirrors `threads-cli`:
+`icalendar` now follows the same layered CLI shape as `threads-cli`:
 
 ```text
-src/
-  cli.ts
-  app/
-    commands/
-      calendars/
-        list.command.ts
-      events/
-        list.command.ts
-    use-cases/
-      calendars/
-      events/
-    ports/
-      calendar-gateway.port.ts
-      config-reader.port.ts
-      ics-parser.port.ts
-  domain/
-    calendars/
-    events/
-    shared/
-  infra/
-    config/
-      env-config.reader.ts
-    caldav/
-      tsdav-calendar.gateway.ts
-    parsing/
-      ics-parser.ts
-  presentation/
-    text/
-    json/
-  shared/
-    errors/
-    result/
-    utils/
+cli -> app(commands/use-cases) -> domain -> infra -> presentation -> shared
 ```
 
----
+The goal is simple: keep CalDAV/ICS plumbing at the edges, keep use-cases readable, and make the repo safe for agents to modify without turning it into provider-coupled spaghetti.
+
+## Current layer map
+
+### Entrypoint
+- `src/cli.ts`
+- `src/index.ts`
+
+Responsibilities:
+- bootstrap the process
+- wire runtime dependencies
+- allow `--help` / `--version` without requiring credentials
+
+### App layer
+- `src/app/commands/*`
+- `src/app/use-cases/*`
+- `src/app/ports/*`
+
+Responsibilities:
+- parse CLI input into DTOs
+- orchestrate calendar/event flows
+- depend on ports, not SDKs
+
+### Domain layer
+- `src/domain/calendars/*`
+- `src/domain/events/*`
+- `src/domain/shared/*`
+
+Responsibilities:
+- calendar selection rules
+- event draft/update models
+- ICS generation rules
+- time-range defaults and validation
+
+### Infra layer
+- `src/infra/config/*`
+- `src/infra/caldav/*`
+- `src/infra/parsing/*`
+
+Responsibilities:
+- env parsing
+- CalDAV client construction
+- provider object mapping
+- event object create/update/delete operations
+- ICS parsing
+
+### Presentation layer
+- `src/presentation/text/*`
+- `src/presentation/json/*`
+
+Responsibilities:
+- human-readable output
+- machine-readable JSON output
+
+### Shared layer
+- `src/shared/errors/*`
+- `src/shared/utils/*`
+
+Responsibilities:
+- small cross-cutting primitives only
+
+## CalDAV adapter split
+
+The original single CalDAV gateway file was split into smaller responsibilities:
+
+- `infra/caldav/client.ts` — runtime-safe `tsdav` client construction
+- `infra/caldav/calendar-mapper.ts` — `DAVCalendar -> Calendar`
+- `infra/caldav/event-object.service.ts` — create/update/delete calendar objects
+- `infra/caldav/tsdav-calendar.gateway.ts` — thin orchestration wrapper implementing `CalendarGatewayPort`
+
+This keeps the `tsdav` edge easier to test and reason about.
 
 ## Boundary rules
 
-### Command -> Application
-Commands call use-cases and know nothing about `tsdav` internals.
+### Command -> Use-case
+Commands may parse argv and validate flags, but they do not talk to `tsdav`.
 
-### Application -> Domain + Ports
-Use-cases coordinate selection, validation, fetch flow, and output DTO composition.
+### Use-case -> Ports + Domain
+Use-cases orchestrate behavior and rely on domain rules plus ports.
 
-### Infrastructure -> Ports
-`tsdav` and raw ICS parsing stay here.
+### Infra -> External providers
+Only infra knows about `tsdav`, ICS raw data, and environment variables.
 
-### Presentation -> Application result DTOs
-Format only.
+### Presentation -> DTOs
+Renderers format results only. No network, no env, no provider logic.
 
-### Domain
-Provider-agnostic and import-safe.
+## Runtime contract
 
----
+Supported commands:
 
-## icalendar domain map
+- `calendars list`
+- `events list`
+- `events create`
+- `events update`
+- `events delete`
 
-### Calendar subdomain
-- `Calendar`
-- `CalendarCollection`
-- `CalendarSelector`
+Both text and JSON output are supported. Machine consumers should prefer `--json`.
 
-### Event subdomain
-- `CalendarEvent`
-- `EventInstance`
-- `EventSummary`
-- `EventTime`
+## Config contract
 
-### Query subdomain
-- `TimeRange`
-- `EventListQuery`
-- validation rules for range defaults and ordering
+Required:
+- `CALDAV_SERVER_URL`
+- `CALDAV_USERNAME`
+- `CALDAV_PASSWORD`
 
-### Diagnostics/config subdomain
-- `ConnectionStatus`
-- config validation results
+Optional:
+- `CALDAV_CALENDAR_NAME`
+- `CALDAV_RANGE_START`
+- `CALDAV_RANGE_END`
+- `CALDAV_EXPAND_RECURRING`
+- `CALDAV_ORGANIZER_NAME`
 
----
+## Testing strategy
 
-## Port model for icalendar
+The current test suite covers:
 
-Target ports:
+- calendar selection
+- time range rules
+- command parsing
+- runtime output + error output
+- env parsing
+- ICS generation and parsing
+- event write DTO mapping
 
-- `CalendarGatewayPort`
-  - `listCalendars()`
-  - `listEvents(query)`
-  - later: `createEvent()`, `updateEvent()`, `deleteEvent()`
+For live validation, the repo was also smoke-tested against a real iCloud CalDAV account.
 
-- `ConfigReaderPort`
-  - `readRuntimeConfig()`
-
-- `IcsParserPort`
-  - `parseEvent(rawIcs)`
-
-This keeps `tsdav` and ICS line parsing from leaking into command code.
-
----
-
-## Migration from current structure
-
-Current state is mostly a monolith in `src/index.ts`.
-
-Split it in this order:
-
-1. move env parsing to `infra/config`
-2. move CalDAV connection/fetch code to `infra/caldav`
-3. move calendar selection + time range logic to `domain` + `app/use-cases`
-4. move ICS parsing to `infra/parsing` behind `IcsParserPort`
-5. move printing to `presentation/text`
-6. replace `src/index.ts` with `src/cli.ts` + command runtime
-
----
-
-## Test strategy by layer
-
-- **domain tests**: time range defaults, selection rules, invariants
-- **use-case tests**: mocked gateway/parser ports
-- **infra tests**: `tsdav` mapping, ICS parsing
-- **command tests**: argv -> DTO mapping
-- **presentation tests**: formatted text/json outputs
-
----
-
-## Definition of architectural done
+## Definition of done for new features
 
 A feature is architecturally correct when:
 
 1. CLI parsing lives in `app/commands/*`
-2. one use-case owns orchestration
-3. `tsdav` is only used inside infra adapters
-4. text output lives in `presentation/*`
-5. calendar/time-range rules are not buried inside the entrypoint
+2. orchestration lives in one use-case
+3. provider SDK usage stays inside `infra/*`
+4. output formatting stays inside `presentation/*`
+5. config parsing does not leak into business logic
+6. tests cover the new boundary you touched

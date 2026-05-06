@@ -10,6 +10,7 @@ const envSchema = z.object({
   CALDAV_RANGE_START: z.string().datetime({ offset: true }).optional(),
   CALDAV_RANGE_END: z.string().datetime({ offset: true }).optional(),
   CALDAV_EXPAND_RECURRING: z.enum(['true', 'false']).optional().transform((value) => value === 'true'),
+  CALDAV_ORGANIZER_NAME: z.string().min(1).optional(),
 })
 
 export class EnvConfigReader implements ConfigReaderPort {
@@ -24,6 +25,7 @@ export class EnvConfigReader implements ConfigReaderPort {
       rangeStart: env.CALDAV_RANGE_START,
       rangeEnd: env.CALDAV_RANGE_END,
       expandRecurring: env.CALDAV_EXPAND_RECURRING,
+      organizerName: env.CALDAV_ORGANIZER_NAME,
     }
   }
 }
