@@ -4,6 +4,12 @@ All notable changes to this project should be documented in this file.
 
 The format is inspired by Keep a Changelog, with lightweight SemVer rules documented in [`docs/versioning.md`](./docs/versioning.md).
 
+## [0.1.4] - 2026-05-07
+
+### Fixed
+- restored a real executable Node shebang in the published CLI entrypoint so global npm installs can run `icalendar` directly
+- made `--version` read the packaged version instead of a stale hardcoded value
+
 ## [0.1.3] - 2026-05-07
 
 ### Changed
