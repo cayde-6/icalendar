@@ -4,6 +4,15 @@ All notable changes to this project should be documented in this file.
 
 The format is inspired by Keep a Changelog, with lightweight SemVer rules documented in [`docs/versioning.md`](./docs/versioning.md).
 
+## [0.1.1] - 2026-05-07
+
+### Changed
+- switched release automation from token-based npm publishing to npm Trusted Publishing via GitHub OIDC
+- refreshed README badges and install/release guidance for the public npm package
+
+### Fixed
+- removed README internal automation details that do not belong in the public-facing docs
+
 ## [0.1.0] - 2026-05-06
 
 ### Added
