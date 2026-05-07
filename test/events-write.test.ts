@@ -48,6 +48,21 @@ test('events update delegates to gateway', async () => {
   assert.equal(result.url, 'event-url')
 })
 
+test('events delete accepts positional url after --json', async () => {
+  let receivedUrl = ''
+  const gateway: CalendarGatewayPort = {
+    async listCalendars() { return [calendar] },
+    async listEvents() { return [] },
+    async createEvent() { throw new Error('unexpected') },
+    async updateEvent() { throw new Error('unexpected') },
+    async deleteEvent(input) { receivedUrl = input.url; return { ok: true, calendarName: input.calendar.displayName, url: input.url } },
+  }
+
+  const result = await runEventsDeleteCommand(gateway, config, ['events','delete','--json','event-url'])
+  assert.equal(receivedUrl, 'event-url')
+  assert.equal(result.url, 'event-url')
+})
+
 test('events delete delegates to gateway', async () => {
   let receivedUrl = ''
   const gateway: CalendarGatewayPort = {

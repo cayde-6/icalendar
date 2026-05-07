@@ -9,8 +9,10 @@ const getFlagValue = (args: string[], name: string): string | undefined => {
   return args[index + 1]?.startsWith('--') ? undefined : args[index + 1]
 }
 
+const getPositionalUrl = (args: string[]): string | undefined => args.slice(2).find((arg) => !arg.startsWith('--'))
+
 export const runEventsDeleteCommand = async (gateway: CalendarGatewayPort, config: RuntimeConfig, args: string[]) => {
-  const url = getFlagValue(args, '--url') || args[2]
+  const url = getFlagValue(args, '--url') || getPositionalUrl(args)
   if (!url) {
     throw new CliError('missing_flags', 'events delete requires --url <event-url> or events delete <event-url>')
   }
