@@ -4,6 +4,11 @@ All notable changes to this project should be documented in this file.
 
 The format is inspired by Keep a Changelog, with lightweight SemVer rules documented in [`docs/versioning.md`](./docs/versioning.md).
 
+## [0.1.2] - 2026-05-07
+
+### Fixed
+- aligned GitHub Actions npm Trusted Publishing setup with npm docs by adding `registry-url` and modern action/runtime versions
+
 ## [0.1.1] - 2026-05-07
 
 ### Changed
