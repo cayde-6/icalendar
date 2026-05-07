@@ -1,12 +1,15 @@
 # icalendar
 
-[![CI](https://github.com/cayde-6/icalendar/actions/workflows/ci.yml/badge.svg)](https://github.com/cayde-6/icalendar/actions/workflows/ci.yml)
 [![Release](https://github.com/cayde-6/icalendar/actions/workflows/release.yml/badge.svg)](https://github.com/cayde-6/icalendar/actions/workflows/release.yml)
+[![npm version](https://img.shields.io/npm/v/%40cayde-6%2Ficalendar)](https://www.npmjs.com/package/@cayde-6/icalendar)
+[![CI](https://github.com/cayde-6/icalendar/actions/workflows/ci.yml/badge.svg)](https://github.com/cayde-6/icalendar/actions/workflows/ci.yml)
 [![Coverage](https://codecov.io/gh/cayde-6/icalendar/branch/main/graph/badge.svg)](https://codecov.io/gh/cayde-6/icalendar)
 
 ![icalendar hero](./assets/hero.png)
 
 Production-ready TypeScript CLI for **CalDAV calendars**, **iCalendar events**, and **agent-friendly automation**.
+
+Published package: [`@cayde-6/icalendar`](https://www.npmjs.com/package/@cayde-6/icalendar)
 
 `icalendar` gives agents and scripts a thin, reliable interface for:
 - listing calendars
@@ -26,6 +29,7 @@ Most CalDAV tooling is either too low-level for agents or too UI-centric for aut
 ## Features
 
 - ESM TypeScript CLI with clean layering
+- published npm package: `@cayde-6/icalendar`
 - CalDAV access via `tsdav`
 - invite-ready ICS generation
 - attendee support for create/update flows
@@ -33,6 +37,7 @@ Most CalDAV tooling is either too low-level for agents or too UI-centric for aut
 - text and JSON output modes
 - runtime-safe handling of `--help` / `--version`
 - live-tested against iCloud CalDAV
+- GitHub Release + npm Trusted Publishing workflow
 
 ## Install
 
@@ -41,6 +46,7 @@ Most CalDAV tooling is either too low-level for agents or too UI-centric for aut
 ```bash
 npm install -g @cayde-6/icalendar
 icalendar --help
+icalendar --version
 ```
 
 ### From source
@@ -215,6 +221,12 @@ The CalDAV SDK stays in `infra/`, use-cases orchestrate, domain stays provider-a
 - organizer display name is configurable with `CALDAV_ORGANIZER_NAME`
 - attendee invites work in both create and update flows
 - CLI defaults to the first calendar when `CALDAV_CALENDAR_NAME` is omitted
+
+## Releases
+
+- GitHub releases are created from pushed tags: `v*`
+- npm publishing is wired through **npm Trusted Publishing** from GitHub Actions
+- current public package name: `@cayde-6/icalendar`
 
 ## Repo docs
 
