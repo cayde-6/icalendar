@@ -4,6 +4,15 @@ All notable changes to this project should be documented in this file.
 
 The format is inspired by Keep a Changelog, with lightweight SemVer rules documented in [`docs/versioning.md`](./docs/versioning.md).
 
+## [0.1.3] - 2026-05-07
+
+### Changed
+- replaced the GitHub Release action step with `gh release create` to remove the deprecated Node 20 action runtime warning
+- expanded automated coverage around runtime routing, ICS generation/parsing, renderers, and time-range helpers
+
+### Fixed
+- release automation no longer depends on `softprops/action-gh-release`
+
 ## [0.1.2] - 2026-05-07
 
 ### Fixed

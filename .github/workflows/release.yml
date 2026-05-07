@@ -39,7 +39,9 @@ jobs:
         run: npm publish --access public
 
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: release/icalendar-${{ github.ref_name }}.tgz
-          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            release/icalendar-${GITHUB_REF_NAME}.tgz \
+            --generate-notes

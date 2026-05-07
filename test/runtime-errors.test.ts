@@ -33,3 +33,14 @@ test('printError renders plain text without --json', () => {
 
   assert.equal(output, 'Boom')
 })
+
+
+test('printError renders plain error json when requested', () => {
+  const output = captureStderr(() => {
+    printError(['events', 'create', '--json'], new Error('Boom'))
+  })
+
+  assert.match(output, /"ok": false/)
+  assert.doesNotMatch(output, /"code"/)
+  assert.match(output, /"message": "Boom"/)
+})

@@ -33,6 +33,23 @@ test('renderEventsText includes count and richer event fields', () => {
   assert.match(text, /url: event-url/)
 })
 
+test('renderEventsText omits range label when only selected calendar is present', () => {
+  const text = renderEventsText({
+    ok: true,
+    count: 1,
+    calendars: [],
+    selectedCalendar: { id: '1', displayName: 'Personal', url: 'u1' },
+    events: [{ summary: 'Demo', url: 'event-url' }],
+  })
+
+  assert.match(text, /^events list: 1 item\(s\)/)
+  assert.match(text, /calendar: Personal$/m)
+  assert.doesNotMatch(text, /range/)
+  assert.match(text, /start: -/)
+  assert.match(text, /end: -/)
+  assert.match(text, /location: -/)
+})
+
 test('renderEventMutationText stays compact', () => {
   const text = renderEventMutationText('create', { ok: true, calendarName: 'Personal', url: 'event-url' })
   assert.match(text, /events create: done/)

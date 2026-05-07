@@ -19,6 +19,15 @@ const gateway: CalendarGatewayPort = {
   async listEvents() {
     return [{ summary: 'Demo event', start: '20260501T000000Z', url: 'https://example.com/event' }]
   },
+  async createEvent(input) {
+    return { ok: true, calendarName: input.calendar.displayName, url: 'created-url' }
+  },
+  async updateEvent(input) {
+    return { ok: true, calendarName: input.calendar.displayName, url: input.update.url }
+  },
+  async deleteEvent(input) {
+    return { ok: true, calendarName: input.calendar.displayName, url: input.url }
+  },
 }
 
 const captureStdout = async (fn: () => Promise<void>) => {
@@ -51,4 +60,52 @@ test('runCommand handles events list in json mode', async () => {
 
   assert.match(output, /"events"/)
   assert.match(output, /Demo event/)
+})
+
+test('runCommand defaults to events list when no args are passed', async () => {
+  const output = await captureStdout(async () => {
+    const handled = await runCommand({ gateway, config, args: [] })
+    assert.equal(handled, true)
+  })
+
+  assert.match(output, /events list: 1 item\(s\)/)
+  assert.match(output, /Demo event/)
+})
+
+test('runCommand handles events create in text mode', async () => {
+  const output = await captureStdout(async () => {
+    const handled = await runCommand({
+      gateway,
+      config,
+      args: ['events', 'create', '--summary', 'Demo', '--start', '2026-05-06T10:00:00Z', '--end', '2026-05-06T11:00:00Z'],
+    })
+    assert.equal(handled, true)
+  })
+
+  assert.match(output, /events create: done/)
+  assert.match(output, /created-url/)
+})
+
+test('runCommand handles events update in text mode', async () => {
+  const output = await captureStdout(async () => {
+    const handled = await runCommand({
+      gateway,
+      config,
+      args: ['events', 'update', '--url', 'event-url', '--summary', 'Demo', '--start', '2026-05-06T10:00:00Z', '--end', '2026-05-06T11:00:00Z'],
+    })
+    assert.equal(handled, true)
+  })
+
+  assert.match(output, /events update: done/)
+  assert.match(output, /event-url/)
+})
+
+test('runCommand handles events delete in text mode', async () => {
+  const output = await captureStdout(async () => {
+    const handled = await runCommand({ gateway, config, args: ['events', 'delete', 'event-url'] })
+    assert.equal(handled, true)
+  })
+
+  assert.match(output, /events delete: done/)
+  assert.match(output, /event-url/)
 })
