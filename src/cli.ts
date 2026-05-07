@@ -1,8 +1,18 @@
+#!/usr/bin/env node
+import { readFileSync } from 'node:fs'
 import { cac } from 'cac'
 
 import { EnvConfigReader } from './infra/config/env-config.reader.js'
 import { TsdavCalendarGateway } from './infra/caldav/tsdav-calendar.gateway.js'
 import { runCommand, printError } from './app/commands/runtime.js'
+
+const packageVersion = (() => {
+  try {
+    return JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version as string
+  } catch {
+    return '0.0.0'
+  }
+})()
 
 const cli = cac('icalendar')
 cli.command('calendars list', 'list available calendars')
@@ -11,7 +21,7 @@ cli.command('events create', 'create calendar event')
 cli.command('events update', 'update calendar event')
 cli.command('events delete [url]', 'delete calendar event')
 cli.help()
-cli.version('0.1.0')
+cli.version(packageVersion)
 
 export const runCli = async (args = process.argv.slice(2)) => {
   if (args.includes('--help') || args.includes('-h') || args.includes('--version') || args.includes('-v')) {
