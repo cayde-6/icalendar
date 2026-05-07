@@ -4,6 +4,11 @@ All notable changes to this project should be documented in this file.
 
 The format is inspired by Keep a Changelog, with lightweight SemVer rules documented in [`docs/versioning.md`](./docs/versioning.md).
 
+## [0.1.5] - 2026-05-07
+
+### Fixed
+- `events delete --json <url>` now works correctly when `--json` appears before the positional event URL
+
 ## [0.1.4] - 2026-05-07
 
 ### Fixed
