@@ -241,18 +241,6 @@ The CalDAV SDK stays in `infra/`, use-cases orchestrate, domain stays provider-a
 
 MIT
 
-## npm publish automation
-
-Releases can publish automatically to npm via npm Trusted Publishing from GitHub Actions.
-
-Trusted publisher settings should target:
-- owner: `cayde-6`
-- repository: `icalendar`
-- workflow: `release.yml`
-- environment: _(empty)_
-
-The release workflow publishes `@cayde-6/icalendar` after verify passes for a pushed `v*` tag using GitHub OIDC (`id-token: write`).
-
 ## Live smoke workflow
 
 A dedicated GitHub Actions workflow is included for optional live CalDAV validation through repository secrets.
