@@ -19,7 +19,7 @@ The format is inspired by Keep a Changelog, with lightweight SemVer rules docume
 - `docs/automation-integration.md` install flow now shows `npm install -g` as the primary option
 - CI matrix extended to Node 20, 22, and 24 to match the release build Node version
 - `package.json` author field now includes full name, email, and GitHub URL
-- GitHub Actions versions in `release.yml` aligned with `ci.yml` (both use v4)
+- GitHub Actions versions in both workflows upgraded to v6 (`actions/checkout`, `actions/setup-node`) to avoid Node.js 20 runtime deprecation
 
 ## [0.1.5] - 2026-05-07
 
