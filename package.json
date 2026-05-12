@@ -1,7 +1,7 @@
 {
   "name": "@cayde-6/icalendar",
   "version": "0.1.5",
-  "description": "Production-ready TypeScript CLI for CalDAV calendars, iCalendar events, and agent automation",
+  "description": "TypeScript CLI for CalDAV calendars, iCalendar events, and agent automation",
   "type": "module",
   "private": false,
   "main": "dist/index.js",
@@ -18,8 +18,7 @@
   "files": [
     "dist",
     "README.md",
-    "LICENSE",
-    "assets"
+    "LICENSE"
   ],
   "engines": {
     "node": ">=20"

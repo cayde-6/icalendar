@@ -4,6 +4,17 @@ All notable changes to this project should be documented in this file.
 
 The format is inspired by Keep a Changelog, with lightweight SemVer rules documented in [`docs/versioning.md`](./docs/versioning.md).
 
+## [Unreleased]
+
+### Added
+- `CONTRIBUTING.md` with contributor workflow and architectural guardrails
+- `SECURITY.md` with private vulnerability reporting guidance and secret-handling expectations
+
+### Changed
+- softened public package positioning from "production-ready" to a more accurate early-stage/usable status
+- removed the large hero asset from the published npm package to keep installs leaner
+- cleaned README links so documented GitHub Actions match the workflows that actually exist
+
 ## [0.1.5] - 2026-05-07
 
 ### Fixed

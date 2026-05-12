@@ -7,7 +7,9 @@
 
 ![icalendar hero](./assets/hero.png)
 
-Production-ready TypeScript CLI for **CalDAV calendars**, **iCalendar events**, and **agent-friendly automation**.
+TypeScript CLI for **CalDAV calendars**, **iCalendar events**, and **agent-friendly automation**.
+
+> Status: **usable today, early-stage, actively iterating**.
 
 Published package: [`@cayde-6/icalendar`](https://www.npmjs.com/package/@cayde-6/icalendar)
 
@@ -36,8 +38,9 @@ Most CalDAV tooling is either too low-level for agents or too UI-centric for aut
 - configurable organizer common name via env
 - text and JSON output modes
 - runtime-safe handling of `--help` / `--version`
-- live-tested against iCloud CalDAV
+- live-tested against iCloud CalDAV create → update → delete flows
 - GitHub Release + npm Trusted Publishing workflow
+- architecture and agent-integration docs for embedders
 
 ## Install
 
@@ -214,13 +217,14 @@ cli -> app(commands/use-cases) -> domain -> infra -> presentation -> shared
 
 The CalDAV SDK stays in `infra/`, use-cases orchestrate, domain stays provider-agnostic, and renderers only format output.
 
-## Production-readiness notes
+## Reliability notes
 
 - invite flows were smoke-tested live against iCloud CalDAV
 - `--help` and `--version` do not require env credentials
 - organizer display name is configurable with `CALDAV_ORGANIZER_NAME`
 - attendee invites work in both create and update flows
 - CLI defaults to the first calendar when `CALDAV_CALENDAR_NAME` is omitted
+- `npm run verify` covers typecheck, build, tests, and coverage reporting
 
 ## Releases
 
@@ -235,7 +239,9 @@ The CalDAV SDK stays in `infra/`, use-cases orchestrate, domain stays provider-a
 - [Release checklist](./docs/release-checklist.md)
 - [Versioning policy](./docs/versioning.md)
 - [Changelog](./CHANGELOG.md)
-- GitHub Actions: `.github/workflows/ci.yml`, `.github/workflows/release.yml`, `.github/workflows/smoke-icloud.yml`
+- [Contributing guide](./CONTRIBUTING.md)
+- [Security policy](./SECURITY.md)
+- GitHub Actions: `.github/workflows/ci.yml`, `.github/workflows/release.yml`
 
 ## License
 
