@@ -247,19 +247,3 @@ The CalDAV SDK stays in `infra/`, use-cases orchestrate, domain stays provider-a
 
 MIT
 
-## Live validation
-
-The repo includes `.github/scripts/smoke-icloud.mjs` as a reference smoke script for live CalDAV validation.
-
-If you want to run live validation in your own environment, provide:
-
-- `CALDAV_SERVER_URL`
-- `CALDAV_USERNAME`
-- `CALDAV_PASSWORD`
-
-Optional:
-
-- `CALDAV_CALENDAR_NAME`
-- `CALDAV_ORGANIZER_NAME`
-
-The validation flow should create a temporary event, update it, and delete it at the end.
