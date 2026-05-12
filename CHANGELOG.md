@@ -6,6 +6,8 @@ The format is inspired by Keep a Changelog, with lightweight SemVer rules docume
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-05-12
+
 ### Added
 - `CONTRIBUTING.md` with contributor workflow and architectural guardrails
 - `SECURITY.md` with private vulnerability reporting guidance and secret-handling expectations

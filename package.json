@@ -1,6 +1,6 @@
 {
   "name": "@cayde-6/icalendar",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "TypeScript CLI for CalDAV calendars, iCalendar events, and automation workflows",
   "type": "module",
   "private": false,
