@@ -1,6 +1,6 @@
-# Agent integration guide
+# Automation integration guide
 
-This page is for agents, automations, and other repos that want to **use `icalendar` as a dependable CLI building block**.
+This page is for automations, scripts, agents, and other repos that want to **use `icalendar` as a dependable CLI building block**.
 
 ## What you get
 
@@ -35,8 +35,8 @@ CALDAV_PASSWORD=your-app-specific-password
 ## Recommended env
 
 ```env
-CALDAV_CALENDAR_NAME=OpenClaw Test
-CALDAV_ORGANIZER_NAME=Bender
+CALDAV_CALENDAR_NAME=Example Calendar
+CALDAV_ORGANIZER_NAME=Calendar Bot
 CALDAV_EXPAND_RECURRING=true
 ```
 
@@ -49,7 +49,7 @@ icalendar calendars list
 icalendar events list
 ```
 
-### 2. Agent-safe JSON mode
+### 2. JSON mode for automations
 
 ```bash
 icalendar events list --json
@@ -71,7 +71,7 @@ Prefer `dist/cli.js` for repeatable production runs. Use `src/cli.ts` with `tsx`
 ```json
 {
   "ok": true,
-  "calendarName": "OpenClaw Test",
+  "calendarName": "Example Calendar",
   "url": "https://.../event.ics"
 }
 ```
@@ -82,7 +82,7 @@ Prefer `dist/cli.js` for repeatable production runs. Use `src/cli.ts` with `tsx`
 {
   "ok": true,
   "selectedCalendar": {
-    "displayName": "OpenClaw Test"
+    "displayName": "Example Calendar"
   },
   "events": [],
   "count": 0
@@ -116,10 +116,10 @@ icalendar events create \
 Organizer display name is controlled by:
 
 ```env
-CALDAV_ORGANIZER_NAME=Bender
+CALDAV_ORGANIZER_NAME=Calendar Bot
 ```
 
-This writes `ORGANIZER;CN=Bender:mailto:...` into the generated ICS. Calendar clients may still choose their own UI rendering rules.
+This writes `ORGANIZER;CN=Calendar Bot:mailto:...` into the generated ICS. Calendar clients may still choose their own UI rendering rules.
 
 ## Operational advice
 

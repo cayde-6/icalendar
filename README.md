@@ -7,26 +7,24 @@
 
 ![icalendar hero](./assets/hero.png)
 
-TypeScript CLI for **CalDAV calendars**, **iCalendar events**, and **agent-friendly automation**.
-
-> Status: **usable today, early-stage, actively iterating**.
+TypeScript CLI for **CalDAV calendars**, **iCalendar events**, and **automation-friendly workflows**.
 
 Published package: [`@cayde-6/icalendar`](https://www.npmjs.com/package/@cayde-6/icalendar)
 
-`icalendar` gives agents and scripts a thin, reliable interface for:
+`icalendar` gives scripts, automations, and integrations a thin, reliable interface for:
 - listing calendars
 - listing events
 - creating events
 - updating events
 - deleting events
 - sending attendee invites through CalDAV/iCalendar
-- setting a friendly organizer display name (for example `Bender`)
+- setting a friendly organizer display name (for example `Calendar Bot`)
 
 It was validated live against **real iCloud CalDAV** with create → update → invite → delete flows.
 
 ## Why this exists
 
-Most CalDAV tooling is either too low-level for agents or too UI-centric for automation. This repo wraps the ugly parts behind a small CLI and a layered codebase that is easy to embed, extend, and reason about.
+Most CalDAV tooling is either too low-level for automation or too UI-centric for scripts and integrations. This repo wraps the ugly parts behind a small CLI and a layered codebase that is easy to embed, extend, and reason about.
 
 ## Features
 
@@ -40,7 +38,7 @@ Most CalDAV tooling is either too low-level for agents or too UI-centric for aut
 - runtime-safe handling of `--help` / `--version`
 - live-tested against iCloud CalDAV create → update → delete flows
 - GitHub Release + npm Trusted Publishing workflow
-- architecture and agent-integration docs for embedders
+- architecture and integration docs for embedders
 
 ## Install
 
@@ -94,8 +92,8 @@ CALDAV_PASSWORD=app-specific-password
 Optional configuration:
 
 ```env
-CALDAV_CALENDAR_NAME=OpenClaw Test
-CALDAV_ORGANIZER_NAME=Bender
+CALDAV_CALENDAR_NAME=Example Calendar
+CALDAV_ORGANIZER_NAME=Calendar Bot
 CALDAV_RANGE_START=2026-05-07T00:00:00+02:00
 CALDAV_RANGE_END=2026-05-08T00:00:00+02:00
 CALDAV_EXPAND_RECURRING=true
@@ -173,10 +171,10 @@ icalendar events update \
 icalendar events delete "https://caldav.example.com/calendars/personal/event.ics"
 ```
 
-## Agent integration
+## Automation integration
 
-If another agent/session wants to adopt this CLI, start here:
-- [Agent integration guide](./docs/agent-integration.md)
+If another automation, script, or service wants to adopt this CLI, start here:
+- [Automation integration guide](./docs/agent-integration.md)
 - [Architecture](./docs/architecture.md)
 
 Short version:
@@ -209,7 +207,7 @@ Current coverage includes:
 
 ## Architecture
 
-`icalendar` follows the same layered structure as `threads-cli`:
+`icalendar` follows a layered CLI structure:
 
 ```text
 cli -> app(commands/use-cases) -> domain -> infra -> presentation -> shared
@@ -234,7 +232,7 @@ The CalDAV SDK stays in `infra/`, use-cases orchestrate, domain stays provider-a
 
 ## Repo docs
 
-- [Agent integration guide](./docs/agent-integration.md)
+- [Automation integration guide](./docs/agent-integration.md)
 - [Architecture](./docs/architecture.md)
 - [Release checklist](./docs/release-checklist.md)
 - [Versioning policy](./docs/versioning.md)
@@ -247,19 +245,3 @@ The CalDAV SDK stays in `infra/`, use-cases orchestrate, domain stays provider-a
 
 MIT
 
-## Live validation
-
-The repo includes `.github/scripts/smoke-icloud.mjs` as a reference smoke script for live CalDAV validation.
-
-If you want to run live validation in your own environment, provide:
-
-- `CALDAV_SERVER_URL`
-- `CALDAV_USERNAME`
-- `CALDAV_PASSWORD`
-
-Optional:
-
-- `CALDAV_CALENDAR_NAME`
-- `CALDAV_ORGANIZER_NAME`
-
-The validation flow should create a temporary event, update it, and delete it at the end.

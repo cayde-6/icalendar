@@ -1,12 +1,12 @@
 # Unified CLI Architecture — icalendar
 
-`icalendar` now follows the same layered CLI shape as `threads-cli`:
+`icalendar` follows a layered CLI shape:
 
 ```text
 cli -> app(commands/use-cases) -> domain -> infra -> presentation -> shared
 ```
 
-The goal is simple: keep CalDAV/ICS plumbing at the edges, keep use-cases readable, and make the repo safe for agents to modify without turning it into provider-coupled spaghetti.
+The goal is simple: keep CalDAV/ICS plumbing at the edges, keep use-cases readable, and make the repo easier to extend without turning it into provider-coupled spaghetti.
 
 ## Current layer map
 
