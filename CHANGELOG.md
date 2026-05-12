@@ -13,7 +13,7 @@ The format is inspired by Keep a Changelog, with lightweight SemVer rules docume
 ### Changed
 - softened public package positioning from "production-ready" to a more accurate early-stage/usable status
 - removed the large hero asset from the published npm package to keep installs leaner
-- cleaned README links so documented GitHub Actions match the workflows that actually exist
+- cleaned README and release docs so automation guidance matches the workflows that actually exist
 
 ## [0.1.5] - 2026-05-07
 
