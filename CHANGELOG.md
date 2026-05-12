@@ -11,7 +11,7 @@ The format is inspired by Keep a Changelog, with lightweight SemVer rules docume
 - `SECURITY.md` with private vulnerability reporting guidance and secret-handling expectations
 
 ### Changed
-- softened public package positioning from "production-ready" to a more accurate early-stage/usable status
+- removed self-referential internal placeholders from public docs in favor of generic examples
 - removed the large hero asset from the published npm package to keep installs leaner
 - cleaned README and release docs so automation guidance matches the workflows that actually exist
 
