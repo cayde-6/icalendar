@@ -174,7 +174,7 @@ icalendar events delete "https://caldav.example.com/calendars/personal/event.ics
 ## Automation integration
 
 If another automation, script, or service wants to adopt this CLI, start here:
-- [Automation integration guide](./docs/agent-integration.md)
+- [Automation integration guide](./docs/automation-integration.md)
 - [Architecture](./docs/architecture.md)
 
 Short version:
@@ -232,7 +232,7 @@ The CalDAV SDK stays in `infra/`, use-cases orchestrate, domain stays provider-a
 
 ## Repo docs
 
-- [Automation integration guide](./docs/agent-integration.md)
+- [Automation integration guide](./docs/automation-integration.md)
 - [Architecture](./docs/architecture.md)
 - [Release checklist](./docs/release-checklist.md)
 - [Versioning policy](./docs/versioning.md)
