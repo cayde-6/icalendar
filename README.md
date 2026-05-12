@@ -171,6 +171,45 @@ icalendar events update \
 icalendar events delete "https://caldav.example.com/calendars/personal/event.ics"
 ```
 
+## Programmatic usage
+
+The package can also be used as a library.
+
+### CalDAV gateway
+
+```ts
+import { TsdavCalendarGateway } from '@cayde-6/icalendar'
+import type { RuntimeConfig } from '@cayde-6/icalendar'
+
+const config: RuntimeConfig = {
+  serverUrl: 'https://caldav.icloud.com/',
+  username: 'user@example.com',
+  password: 'app-specific-password',
+}
+
+const gateway = new TsdavCalendarGateway(config)
+const calendars = await gateway.listCalendars()
+const events = await gateway.listEvents({ calendar: calendars[0] })
+```
+
+### ICS generation
+
+```ts
+import { buildEventIcs } from '@cayde-6/icalendar'
+import type { EventDraft } from '@cayde-6/icalendar'
+
+const draft: EventDraft = {
+  summary: 'Team standup',
+  start: '2026-05-07T10:00:00+02:00',
+  end: '2026-05-07T10:15:00+02:00',
+  attendees: [{ email: 'colleague@example.com' }],
+}
+
+const ics = buildEventIcs(draft, undefined, 'organizer@example.com', 'Calendar Bot')
+```
+
+Exported types: `Calendar`, `CalendarEvent`, `EventDraft`, `EventAttendee`, `EventMutationResult`, `EventUpdate`, `TimeRange`, `CalendarGatewayPort`, `RuntimeConfig`.
+
 ## Automation integration
 
 If another automation, script, or service wants to adopt this CLI, start here:

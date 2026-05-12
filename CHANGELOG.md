@@ -9,11 +9,17 @@ The format is inspired by Keep a Changelog, with lightweight SemVer rules docume
 ### Added
 - `CONTRIBUTING.md` with contributor workflow and architectural guardrails
 - `SECURITY.md` with private vulnerability reporting guidance and secret-handling expectations
+- programmatic API: `src/index.ts` now exports domain types (`Calendar`, `CalendarEvent`, `EventDraft`, `EventAttendee`, `EventMutationResult`, `EventUpdate`, `TimeRange`), `buildEventIcs`, `CalendarGatewayPort`, `RuntimeConfig`, `TsdavCalendarGateway`, and `CliError`
+- README programmatic usage section with CalDAV gateway and ICS generation examples
 
 ### Changed
 - removed self-referential internal placeholders from public docs in favor of generic examples
 - removed the large hero asset from the published npm package to keep installs leaner
 - cleaned README and release docs so automation guidance matches the workflows that actually exist
+- `docs/automation-integration.md` install flow now shows `npm install -g` as the primary option
+- CI matrix extended to Node 20, 22, and 24 to match the release build Node version
+- `package.json` author field now includes full name, email, and GitHub URL
+- GitHub Actions versions in `release.yml` aligned with `ci.yml` (both use v4)
 
 ## [0.1.5] - 2026-05-07
 
