@@ -1,6 +1,6 @@
 # Release checklist
 
-Use this before calling the repo production-ready for a new consumer.
+Use this before sharing the repo with a new consumer or presenting it as release-ready.
 
 ## Code quality
 

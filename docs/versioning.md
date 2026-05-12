@@ -23,7 +23,7 @@ Each release should record:
 1. Update version in `package.json`
 2. Add a dated section in `CHANGELOG.md`
 3. Run `npm run verify`
-4. If live credentials exist, trigger `Smoke iCloud CalDAV`
+4. If live credentials exist, run a create → update → delete smoke validation against a dedicated test calendar
 5. Tag the release as `vX.Y.Z`
 6. Push the tag
 7. If npm publishing is enabled, publish `@cayde-6/icalendar` with public access
