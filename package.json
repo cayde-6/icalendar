@@ -45,7 +45,11 @@
     "workflow",
     "icloud"
   ],
-  "author": "cayde-6",
+  "author": {
+    "name": "Maxim Egorov",
+    "email": "maxim.egorov.dev@gmail.com",
+    "url": "https://github.com/cayde-6"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/cayde-6/icalendar/issues"

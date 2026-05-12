@@ -16,12 +16,25 @@ For machine consumers, pass `--json` whenever possible.
 
 ## Install flow
 
+### From npm (recommended)
+
+```bash
+npm install -g @cayde-6/icalendar
+```
+
+### From source
+
 ```bash
 git clone https://github.com/cayde-6/icalendar.git
 cd icalendar
 npm install
-cp .env.example .env
 npm run build
+```
+
+Then configure your environment:
+
+```bash
+cp .env.example .env
 ```
 
 ## Required env
