@@ -4,7 +4,7 @@
 [![npm version](https://img.shields.io/npm/v/%40cayde-6%2Ficalendar)](https://www.npmjs.com/package/@cayde-6/icalendar)
 [![npm downloads](https://img.shields.io/npm/dt/%40cayde-6%2Ficalendar)](https://www.npmjs.com/package/@cayde-6/icalendar)
 [![CI](https://github.com/cayde-6/icalendar/actions/workflows/ci.yml/badge.svg)](https://github.com/cayde-6/icalendar/actions/workflows/ci.yml)
-[![Coverage](https://codecov.io/gh/cayde-6/icalendar/branch/main/graph/badge.svg)](https://codecov.io/gh/cayde-6/icalendar)
+[![Coverage](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fcodecov.io%2Fapi%2Fv2%2Fgithub%2Fcayde-6%2Frepos%2Ficalendar%2F&query=%24.totals.coverage&suffix=%25&label=coverage)](https://app.codecov.io/github/cayde-6/icalendar)
 
 ![icalendar hero](./assets/hero.png)
 
