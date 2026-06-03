@@ -2,6 +2,7 @@
 
 [![Release](https://github.com/cayde-6/icalendar/actions/workflows/release.yml/badge.svg)](https://github.com/cayde-6/icalendar/actions/workflows/release.yml)
 [![npm version](https://img.shields.io/npm/v/%40cayde-6%2Ficalendar)](https://www.npmjs.com/package/@cayde-6/icalendar)
+[![npm downloads](https://img.shields.io/npm/dm/%40cayde-6%2Ficalendar)](https://www.npmjs.com/package/@cayde-6/icalendar)
 [![CI](https://github.com/cayde-6/icalendar/actions/workflows/ci.yml/badge.svg)](https://github.com/cayde-6/icalendar/actions/workflows/ci.yml)
 [![Coverage](https://codecov.io/gh/cayde-6/icalendar/branch/main/graph/badge.svg)](https://codecov.io/gh/cayde-6/icalendar)
 
