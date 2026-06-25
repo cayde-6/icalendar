@@ -31,20 +31,38 @@ test('events create delegates to gateway', async () => {
   assert.equal(result.url, 'created-url')
 })
 
-test('events update delegates to gateway', async () => {
+test('events update delegates attendee additions and removals to gateway', async () => {
   let receivedUrl = ''
   let receivedAttendees: unknown
+  let receivedRemoveAttendees: unknown
   const gateway: CalendarGatewayPort = {
     async listCalendars() { return [calendar] },
     async listEvents() { return [] },
     async createEvent() { throw new Error('unexpected') },
-    async updateEvent(input) { receivedUrl = input.update.url; receivedAttendees = input.update.attendees; return { ok: true, calendarName: input.calendar.displayName, url: input.update.url } },
+    async updateEvent(input) {
+      receivedUrl = input.update.url
+      receivedAttendees = input.update.attendees
+      receivedRemoveAttendees = input.update.removeAttendees
+      return { ok: true, calendarName: input.calendar.displayName, url: input.update.url }
+    },
     async deleteEvent() { throw new Error('unexpected') },
   }
 
-  const result = await runEventsUpdateCommand(gateway, config, ['events','update','--url','event-url','--summary','Demo','--start','2026-05-06T10:00:00Z','--end','2026-05-06T11:00:00Z','--attendees','primary.attendee@example.test'])
+  const result = await runEventsUpdateCommand(gateway, config, [
+    'events','update',
+    '--url','event-url',
+    '--summary','Demo',
+    '--start','2026-05-06T10:00:00Z',
+    '--end','2026-05-06T11:00:00Z',
+    '--attendees','primary.attendee@example.test, secondary.attendee@example.test',
+    '--remove-attendees','old.attendee@example.test, stale.attendee@example.test',
+  ])
   assert.equal(receivedUrl, 'event-url')
-  assert.deepEqual(receivedAttendees, [{ email: 'primary.attendee@example.test' }])
+  assert.deepEqual(receivedAttendees, [
+    { email: 'primary.attendee@example.test' },
+    { email: 'secondary.attendee@example.test' },
+  ])
+  assert.deepEqual(receivedRemoveAttendees, ['old.attendee@example.test', 'stale.attendee@example.test'])
   assert.equal(result.url, 'event-url')
 })
 

@@ -63,6 +63,64 @@ test('patchExistingEventIcs removes requested attendees without dropping alarms'
   assert.match(patched, /TRIGGER:-PT1H/)
 })
 
+test('patchExistingEventIcs does not duplicate existing attendees', () => {
+  const patched = patchExistingEventIcs(existingIcs, {
+    url: 'event-url',
+    summary: 'Updated',
+    start: '2026-06-26T20:30:00+02:00',
+    end: '2026-06-26T21:30:00+02:00',
+    attendees: [{ email: 'primary.attendee@example.test' }],
+  })
+
+  const attendeeMatches = patched.match(/primary\.attendee@example\.test/g) || []
+  assert.equal(attendeeMatches.length, 1)
+  assert.match(patched, /ATTENDEE;CN=Primary;EMAIL=primary\.attendee@example\.test;PARTSTAT=ACCEPTED:\/principal\/primary/)
+  assert.match(patched, /TRIGGER:-PT1H/)
+})
+
+test('patchExistingEventIcs unfolds folded attendee lines before matching removals', () => {
+  const foldedIcs = existingIcs.replace(
+    'ATTENDEE;CN=Primary;EMAIL=primary.attendee@example.test;PARTSTAT=ACCEPTED:/principal/primary',
+    'ATTENDEE;CN=Primary;EMAIL=primary.attendee@example.test;PARTSTAT=ACCEPTED:\r\n /principal/primary',
+  )
+  const patched = patchExistingEventIcs(foldedIcs, {
+    url: 'event-url',
+    summary: 'Updated',
+    start: '2026-06-26T20:30:00+02:00',
+    end: '2026-06-26T21:30:00+02:00',
+    removeAttendees: ['primary.attendee@example.test'],
+  })
+
+  assert.doesNotMatch(patched, /primary\.attendee@example\.test/)
+  assert.match(patched, /TRIGGER:-PT1H/)
+})
+
+test('patchExistingEventIcs adds METHOD:REQUEST and SEQUENCE when missing', () => {
+  const bareIcs = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'BEGIN:VEVENT',
+    'UID:bare-uid',
+    'DTSTART:20260626T173000Z',
+    'DTEND:20260626T183000Z',
+    'SUMMARY:Original',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n') + '\r\n'
+
+  const patched = patchExistingEventIcs(bareIcs, {
+    url: 'event-url',
+    summary: 'Updated',
+    start: '2026-06-26T20:30:00+02:00',
+    end: '2026-06-26T21:30:00+02:00',
+    attendees: [{ email: 'secondary.attendee@example.test' }],
+  })
+
+  assert.match(patched, /VERSION:2\.0\r\nMETHOD:REQUEST/)
+  assert.match(patched, /SEQUENCE:1/)
+  assert.match(patched, /UID:bare-uid/)
+})
+
 test('EventObjectService.update fetches existing object and preserves metadata on update', async () => {
   let updatedObject: DAVCalendarObject | undefined
   let updatedHeaders: Record<string, string> | undefined

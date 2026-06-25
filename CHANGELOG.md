@@ -6,6 +6,15 @@ The format is inspired by Keep a Changelog, with lightweight SemVer rules docume
 
 ## [Unreleased]
 
+### Added
+- `events update --remove-attendees` removes one or more attendees while preserving the existing event object.
+
+### Changed
+- `events update` now patches the existing CalDAV `.ics` object in place instead of rebuilding a fresh VEVENT, preserving `UID`, `VALARM`, organizer details, and provider-added attendee metadata.
+
+### Fixed
+- iCloud updates no longer drop raw reminder alarms or accepted attendee/principal metadata during ordinary event edits.
+
 ## [0.2.0] - 2026-05-12
 
 ### Added
