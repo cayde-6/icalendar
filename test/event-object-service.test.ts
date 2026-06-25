@@ -121,6 +121,91 @@ test('patchExistingEventIcs adds METHOD:REQUEST and SEQUENCE when missing', () =
   assert.match(patched, /UID:bare-uid/)
 })
 
+test('EventObjectService.create builds and uploads a new calendar object', async () => {
+  let createdFilename = ''
+  let createdUrl = ''
+  let createdIcs = ''
+  const client: CalendarObjectClient = {
+    async createCalendarObject(params) {
+      createdFilename = params.filename
+      createdUrl = params.calendar.url
+      createdIcs = params.iCalString
+    },
+    async fetchCalendarObjects() { throw new Error('unexpected') },
+    async updateCalendarObject() { throw new Error('unexpected') },
+    async deleteCalendarObject() { throw new Error('unexpected') },
+  }
+
+  const service = new EventObjectService(client, { organizerEmail: 'organizer@example.test', organizerCommonName: 'Bender' })
+  const url = await service.create({ id: 'cal', displayName: 'Calendar', url: 'https://caldav.example.com/cal/' }, {
+    summary: 'Created',
+    start: '2026-06-26T20:30:00+02:00',
+    end: '2026-06-26T21:30:00+02:00',
+  })
+
+  assert.equal(createdUrl, 'https://caldav.example.com/cal/')
+  assert.match(createdFilename, /^[0-9a-f-]+\.ics$/)
+  assert.equal(url, `https://caldav.example.com/cal/${createdFilename}`)
+  assert.match(createdIcs, /SUMMARY:Created/)
+  assert.match(createdIcs, /ORGANIZER;CN=Bender:mailto:organizer@example\.test/)
+})
+
+test('EventObjectService.create handles calendar URLs without trailing slash', async () => {
+  let createdFilename = ''
+  const client: CalendarObjectClient = {
+    async createCalendarObject(params) { createdFilename = params.filename },
+    async fetchCalendarObjects() { throw new Error('unexpected') },
+    async updateCalendarObject() { throw new Error('unexpected') },
+    async deleteCalendarObject() { throw new Error('unexpected') },
+  }
+
+  const service = new EventObjectService(client, { organizerEmail: 'organizer@example.test' })
+  const url = await service.create({ id: 'cal', displayName: 'Calendar', url: 'https://caldav.example.com/cal' }, {
+    summary: 'Created',
+    start: '2026-06-26T20:30:00+02:00',
+    end: '2026-06-26T21:30:00+02:00',
+  })
+
+  assert.equal(url, `https://caldav.example.com/cal/${createdFilename}`)
+})
+
+test('EventObjectService.update falls back to building ICS when existing object is unavailable', async () => {
+  let updatedObject: DAVCalendarObject | undefined
+  const client: CalendarObjectClient = {
+    async createCalendarObject() { throw new Error('unexpected') },
+    async fetchCalendarObjects() { return [] },
+    async updateCalendarObject(params) { updatedObject = params.calendarObject },
+    async deleteCalendarObject() { throw new Error('unexpected') },
+  }
+
+  const service = new EventObjectService(client, { organizerEmail: 'organizer@example.test', organizerCommonName: 'Bender' })
+  await service.update({ id: 'cal', displayName: 'Calendar', url: 'https://caldav.example.com/cal/' }, {
+    url: 'https://caldav.example.com/cal/event.ics',
+    summary: 'Fallback',
+    start: '2026-06-26T20:30:00+02:00',
+    end: '2026-06-26T21:30:00+02:00',
+  })
+
+  assert.equal(updatedObject?.url, 'https://caldav.example.com/cal/event.ics')
+  assert.match(String(updatedObject?.data), /SUMMARY:Fallback/)
+  assert.match(String(updatedObject?.data), /ORGANIZER;CN=Bender:mailto:organizer@example\.test/)
+})
+
+test('EventObjectService.delete delegates to CalDAV client', async () => {
+  let deletedUrl = ''
+  const client: CalendarObjectClient = {
+    async createCalendarObject() { throw new Error('unexpected') },
+    async fetchCalendarObjects() { throw new Error('unexpected') },
+    async updateCalendarObject() { throw new Error('unexpected') },
+    async deleteCalendarObject(params) { deletedUrl = params.calendarObject.url },
+  }
+
+  const service = new EventObjectService(client, { organizerEmail: 'organizer@example.test' })
+  await service.delete('https://caldav.example.com/cal/event.ics')
+
+  assert.equal(deletedUrl, 'https://caldav.example.com/cal/event.ics')
+})
+
 test('EventObjectService.update fetches existing object and preserves metadata on update', async () => {
   let updatedObject: DAVCalendarObject | undefined
   let updatedHeaders: Record<string, string> | undefined
