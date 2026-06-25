@@ -181,6 +181,29 @@ test('patchExistingEventIcs inserts attendees after organizer when no attendees 
   assert.match(patched, /ORGANIZER:mailto:organizer@example\.test\r\nATTENDEE;/)
 })
 
+test('patchExistingEventIcs inserts METHOD:REQUEST at top when VERSION is missing', () => {
+  const noVersionIcs = [
+    'BEGIN:VCALENDAR',
+    'BEGIN:VEVENT',
+    'UID:no-version',
+    'DTSTART:20260626T173000Z',
+    'DTEND:20260626T183000Z',
+    'SUMMARY:Original',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n') + '\r\n'
+
+  const patched = patchExistingEventIcs(noVersionIcs, {
+    url: 'event-url',
+    summary: 'Updated',
+    start: '2026-06-26T20:30:00+02:00',
+    end: '2026-06-26T21:30:00+02:00',
+    attendees: [{ email: 'secondary.attendee@example.test' }],
+  })
+
+  assert.match(patched, /BEGIN:VCALENDAR\r\nMETHOD:REQUEST/)
+})
+
 test('patchExistingEventIcs resets invalid SEQUENCE to 1', () => {
   const invalidSequenceIcs = existingIcs.replace('SEQUENCE:2', 'SEQUENCE:bogus')
   const patched = patchExistingEventIcs(invalidSequenceIcs, {
