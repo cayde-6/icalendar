@@ -126,6 +126,8 @@ icalendar events create \
   --attendees "esta@example.com,anna@example.com"
 ```
 
+Use the same attendee syntax with `events update` to add attendees to an existing event. Updates are in-place: the CLI reads the existing CalDAV object, preserves fields that calendar providers may have added (`UID`, `VALARM`, accepted attendee/principal metadata, organizer metadata), appends any missing attendees, increments `SEQUENCE`, and writes the object back to the same URL.
+
 Organizer display name is controlled by:
 
 ```env

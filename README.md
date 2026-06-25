@@ -166,6 +166,8 @@ icalendar events update \
   --attendees "primary.attendee@example.test,secondary.attendee@example.test"
 ```
 
+For existing CalDAV objects, `events update` fetches the current `.ics`, patches the VEVENT in place, and writes it back to the same URL. This preserves existing `UID`, `VALARM` reminder blocks, organizer metadata, and attendee/provider metadata while incrementing `SEQUENCE` and applying the requested field changes.
+
 ### Delete an event
 
 ```bash
