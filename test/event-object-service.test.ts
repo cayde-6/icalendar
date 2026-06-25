@@ -48,7 +48,22 @@ test('patchExistingEventIcs preserves UID, VALARM, and accepted attendee metadat
   assert.match(patched, /SUMMARY:Updated/)
 })
 
-test('EventObjectService.update fetches existing object and updates it with If-Match', async () => {
+test('patchExistingEventIcs removes requested attendees without dropping alarms', () => {
+  const patched = patchExistingEventIcs(existingIcs, {
+    url: 'event-url',
+    summary: 'Updated',
+    start: '2026-06-26T20:30:00+02:00',
+    end: '2026-06-26T21:30:00+02:00',
+    removeAttendees: ['primary.attendee@example.test'],
+  })
+
+  assert.doesNotMatch(patched, /primary\.attendee@example\.test/)
+  assert.match(patched, /UID:stable-uid/)
+  assert.match(patched, /SEQUENCE:3/)
+  assert.match(patched, /TRIGGER:-PT1H/)
+})
+
+test('EventObjectService.update fetches existing object and preserves metadata on update', async () => {
   let updatedObject: DAVCalendarObject | undefined
   let updatedHeaders: Record<string, string> | undefined
   const client: CalendarObjectClient = {
@@ -75,8 +90,8 @@ test('EventObjectService.update fetches existing object and updates it with If-M
   })
 
   assert.equal(updatedObject?.url, 'https://caldav.example.com/cal/event.ics')
-  assert.equal(updatedObject?.etag, 'etag-1')
-  assert.deepEqual(updatedHeaders, { 'If-Match': 'etag-1' })
+  assert.equal(updatedObject?.etag, undefined)
+  assert.deepEqual(updatedHeaders, undefined)
   assert.match(String(updatedObject?.data), /UID:stable-uid/)
   assert.match(String(updatedObject?.data), /TRIGGER:-PT1H/)
   assert.match(String(updatedObject?.data), /secondary\.attendee@example\.test/)

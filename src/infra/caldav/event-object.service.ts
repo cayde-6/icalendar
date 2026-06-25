@@ -83,6 +83,14 @@ const insertAttendee = (lines: string[], attendee: EventAttendee): string[] => {
   return lines
 }
 
+const removeAttendee = (lines: string[], email: string): string[] => {
+  const normalizedEmail = email.toLowerCase()
+  return lines.filter((line) => !(
+    line.toUpperCase().startsWith('ATTENDEE')
+    && attendeeEmail(line) === normalizedEmail
+  ))
+}
+
 const ensureRequestMethod = (lines: string[]): string[] => {
   const methodIndex = lines.findIndex((line) => line.toUpperCase().startsWith('METHOD:'))
   if (methodIndex >= 0) {
@@ -112,11 +120,13 @@ export const patchExistingEventIcs = (existingIcs: string, update: EventUpdate):
   if (update.description !== undefined) replaceOrInsertBeforeEndEvent(lines, 'DESCRIPTION', escapeText(update.description))
   if (update.location !== undefined) replaceOrInsertBeforeEndEvent(lines, 'LOCATION', escapeText(update.location))
 
-  for (const attendee of update.attendees || []) insertAttendee(lines, attendee)
-  if (update.attendees?.length) ensureRequestMethod(lines)
-  incrementSequence(lines)
+  let patchedLines = lines
+  for (const attendee of update.attendees || []) insertAttendee(patchedLines, attendee)
+  for (const email of update.removeAttendees || []) patchedLines = removeAttendee(patchedLines, email)
+  if (update.attendees?.length || update.removeAttendees?.length) ensureRequestMethod(patchedLines)
+  incrementSequence(patchedLines)
 
-  return `${lines.join('\r\n')}\r\n`
+  return `${patchedLines.join('\r\n')}\r\n`
 }
 
 export class EventObjectService {
@@ -151,8 +161,7 @@ export class EventObjectService {
       : buildEventIcs(update, undefined, this.options.organizerEmail, this.options.organizerCommonName)
 
     await this.client.updateCalendarObject({
-      calendarObject: { url: update.url, data: iCalString, etag: existingObject?.etag } as DAVCalendarObject,
-      headers: existingObject?.etag ? { 'If-Match': existingObject.etag } : undefined,
+      calendarObject: { url: update.url, data: iCalString } as DAVCalendarObject,
     })
   }
 

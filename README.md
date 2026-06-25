@@ -163,7 +163,8 @@ icalendar events update \
   --summary "Family sync" \
   --start "2026-05-07T18:00:00+02:00" \
   --end "2026-05-07T18:45:00+02:00" \
-  --attendees "primary.attendee@example.test,secondary.attendee@example.test"
+  --attendees "primary.attendee@example.test,secondary.attendee@example.test" \
+  --remove-attendees "old.attendee@example.test"
 ```
 
 For existing CalDAV objects, `events update` fetches the current `.ics`, patches the VEVENT in place, and writes it back to the same URL. This preserves existing `UID`, `VALARM` reminder blocks, organizer metadata, and attendee/provider metadata while incrementing `SEQUENCE` and applying the requested field changes.
