@@ -126,8 +126,6 @@ icalendar events create \
   --attendees "esta@example.com,anna@example.com"
 ```
 
-Use the same attendee syntax with `events update` to add attendees to an existing event. Pass `--remove-attendees "email@example.test"` to remove one or more attendees. Updates are in-place: the CLI reads the existing CalDAV object, preserves fields that calendar providers may have added (`UID`, `VALARM`, accepted attendee/principal metadata, organizer metadata), appends any missing attendees, removes requested attendees, increments `SEQUENCE`, and writes the object back to the same URL.
-
 Organizer display name is controlled by:
 
 ```env
@@ -135,6 +133,89 @@ CALDAV_ORGANIZER_NAME=Calendar Bot
 ```
 
 This writes `ORGANIZER;CN=Calendar Bot:mailto:...` into the generated ICS. Calendar clients may still choose their own UI rendering rules.
+
+## Event update semantics
+
+`events update` edits an existing CalDAV object in place instead of replacing the event with a freshly generated VEVENT.
+
+Required flags for every update:
+
+```bash
+--url "https://caldav.example.com/calendars/personal/event.ics"
+--summary "Family sync"
+--start "2026-05-07T18:00:00+02:00"
+--end "2026-05-07T18:45:00+02:00"
+```
+
+### Add attendees
+
+`--attendees` ensures the listed attendees exist. It does not replace the full attendee list.
+
+```bash
+icalendar events update \
+  --url "https://caldav.example.com/calendars/personal/event.ics" \
+  --summary "Family sync" \
+  --start "2026-05-07T18:00:00+02:00" \
+  --end "2026-05-07T18:45:00+02:00" \
+  --attendees "secondary.attendee@example.test"
+```
+
+### Remove attendees
+
+`--remove-attendees` removes matching attendee email addresses while preserving all other attendees and provider metadata.
+
+```bash
+icalendar events update \
+  --url "https://caldav.example.com/calendars/personal/event.ics" \
+  --summary "Family sync" \
+  --start "2026-05-07T18:00:00+02:00" \
+  --end "2026-05-07T18:45:00+02:00" \
+  --remove-attendees "old.attendee@example.test"
+```
+
+### Add and remove in one update
+
+```bash
+icalendar events update \
+  --url "https://caldav.example.com/calendars/personal/event.ics" \
+  --summary "Family sync" \
+  --start "2026-05-07T18:00:00+02:00" \
+  --end "2026-05-07T18:45:00+02:00" \
+  --attendees "new.attendee@example.test" \
+  --remove-attendees "old.attendee@example.test"
+```
+
+### Preservation guarantees
+
+For existing objects, the CLI reads the current `.ics`, patches the VEVENT, and writes it back to the same URL. It preserves:
+
+- `UID`
+- `VALARM` reminder blocks
+- `ORGANIZER` metadata
+- existing attendee lines and provider-added attendee/principal metadata
+- unrelated VEVENT properties that are not explicitly updated
+
+It updates:
+
+- `SUMMARY`
+- `DTSTART`
+- `DTEND`
+- `DESCRIPTION`, when provided
+- `LOCATION`, when provided
+- requested attendee additions/removals
+- `SEQUENCE`, incremented on every update
+
+### Verification advice
+
+For automation workflows, re-fetch the raw `.ics` after mutation and verify:
+
+- `UID` stayed the same
+- `SEQUENCE` increased
+- expected `ATTENDEE` lines are present or absent
+- `VALARM` blocks are still present if reminders matter
+- the returned mutation URL is unchanged
+
+Provider caveat: raw `VALARM` preservation does not guarantee that every calendar client will show user-visible reminders. iCloud invite flows may treat visible alerts as per-user/client state, even when the organizer CalDAV object still contains `VALARM` blocks.
 
 ## Operational advice
 

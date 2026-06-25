@@ -34,6 +34,7 @@ Most CalDAV tooling is either too low-level for automation or too UI-centric for
 - CalDAV access via `tsdav`
 - invite-ready ICS generation
 - attendee support for create/update flows
+- in-place event updates that preserve `UID`, raw `VALARM` blocks, and provider-added attendee metadata
 - configurable organizer common name via env
 - text and JSON output modes
 - runtime-safe handling of `--help` / `--version`
@@ -167,7 +168,18 @@ icalendar events update \
   --remove-attendees "old.attendee@example.test"
 ```
 
-For existing CalDAV objects, `events update` fetches the current `.ics`, patches the VEVENT in place, and writes it back to the same URL. This preserves existing `UID`, `VALARM` reminder blocks, organizer metadata, and attendee/provider metadata while incrementing `SEQUENCE` and applying the requested field changes.
+#### Update semantics
+
+`events update` is designed for safe edits to existing CalDAV objects:
+
+- Required flags: `--url`, `--summary`, `--start`, and `--end`.
+- `--attendees` adds missing attendees by email. It does **not** replace the entire attendee list.
+- `--remove-attendees` removes matching attendee email addresses. Other attendee/provider metadata is preserved.
+- Existing events are patched in place: the CLI fetches the current `.ics`, updates the VEVENT, and writes it back to the same URL.
+- Preserved fields include `UID`, `VALARM` reminder blocks, organizer metadata, and provider-added attendee/principal metadata.
+- `SEQUENCE` is incremented on every update.
+
+Calendar-provider caveat: raw `VALARM` blocks can be preserved in the organizer CalDAV object, but some clients/providers (notably iCloud invite flows) may still treat visible reminders as per-user/client state. If user-visible alerts matter, re-check them in the target calendar client after accepting/updating the invite.
 
 ### Delete an event
 
@@ -243,6 +255,8 @@ Current coverage includes:
 - calendar selection rules
 - time range defaults
 - command parsing for create/update/delete
+- update attendee additions and removals
+- in-place event update patching, including preservation of `UID`, raw `VALARM`, and provider attendee metadata
 - text/json runtime output
 - env config parsing
 - ICS generation and ICS parsing
