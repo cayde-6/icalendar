@@ -14,6 +14,7 @@ export type EventDraft = {
 
 export type EventUpdate = EventDraft & {
   url: string
+  removeAttendees?: string[]
 }
 
 export type EventMutationResult = {
