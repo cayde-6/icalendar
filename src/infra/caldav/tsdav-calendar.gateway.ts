@@ -57,7 +57,7 @@ export class TsdavCalendarGateway implements CalendarGatewayPort {
       organizerCommonName: this.config.organizerName,
     })
 
-    await service.update(input.update)
+    await service.update(input.calendar, input.update)
     return { ok: true, calendarName: calendarDisplayName(input.calendar), url: input.update.url }
   }
 
