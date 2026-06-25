@@ -121,6 +121,78 @@ test('patchExistingEventIcs adds METHOD:REQUEST and SEQUENCE when missing', () =
   assert.match(patched, /UID:bare-uid/)
 })
 
+test('patchExistingEventIcs throws on invalid update datetime', () => {
+  assert.throws(
+    () => patchExistingEventIcs(existingIcs, {
+      url: 'event-url',
+      summary: 'Updated',
+      start: 'not-a-date',
+      end: '2026-06-26T21:30:00+02:00',
+    }),
+    /Invalid datetime: not-a-date/,
+  )
+})
+
+test('patchExistingEventIcs inserts missing fields without END:VEVENT fallback', () => {
+  const malformedIcs = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'BEGIN:VEVENT',
+    'UID:malformed-uid',
+  ].join('\r\n') + '\r\n'
+
+  const patched = patchExistingEventIcs(malformedIcs, {
+    url: 'event-url',
+    summary: 'Updated',
+    start: '2026-06-26T20:30:00+02:00',
+    end: '2026-06-26T21:30:00+02:00',
+    attendees: [{ email: 'secondary.attendee@example.test' }],
+  })
+
+  assert.match(patched, /DTSTART:20260626T183000Z/)
+  assert.match(patched, /SUMMARY:Updated/)
+  assert.match(patched, /METHOD:REQUEST/)
+  assert.match(patched, /ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:secondary\.attendee@example\.test/)
+})
+
+test('patchExistingEventIcs inserts attendees after organizer when no attendees exist', () => {
+  const organizerOnlyIcs = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'BEGIN:VEVENT',
+    'UID:organizer-only',
+    'SEQUENCE:0',
+    'DTSTART:20260626T173000Z',
+    'DTEND:20260626T183000Z',
+    'SUMMARY:Original',
+    'ORGANIZER:mailto:organizer@example.test',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n') + '\r\n'
+
+  const patched = patchExistingEventIcs(organizerOnlyIcs, {
+    url: 'event-url',
+    summary: 'Updated',
+    start: '2026-06-26T20:30:00+02:00',
+    end: '2026-06-26T21:30:00+02:00',
+    attendees: [{ email: 'secondary.attendee@example.test' }],
+  })
+
+  assert.match(patched, /ORGANIZER:mailto:organizer@example\.test\r\nATTENDEE;/)
+})
+
+test('patchExistingEventIcs resets invalid SEQUENCE to 1', () => {
+  const invalidSequenceIcs = existingIcs.replace('SEQUENCE:2', 'SEQUENCE:bogus')
+  const patched = patchExistingEventIcs(invalidSequenceIcs, {
+    url: 'event-url',
+    summary: 'Updated',
+    start: '2026-06-26T20:30:00+02:00',
+    end: '2026-06-26T21:30:00+02:00',
+  })
+
+  assert.match(patched, /SEQUENCE:1/)
+})
+
 test('EventObjectService.create builds and uploads a new calendar object', async () => {
   let createdFilename = ''
   let createdUrl = ''
