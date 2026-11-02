@@ -6,6 +6,11 @@ The format is inspired by Keep a Changelog, with lightweight SemVer rules docume
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-11-02
+
+### Changed
+- Updated Zod from 4.4.1 to 4.6.6.
+
 ## [0.2.1] - 2026-06-25
 
 ### Added
