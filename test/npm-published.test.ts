@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict'
-import { execFileSync } from 'node:child_process'
+import { execFileSync, spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { delimiter, join } from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
 
@@ -94,5 +94,45 @@ test('CLI invoked directly or through a symlink returns usage error without a re
       assert.equal((error as { status: number }).status, EXIT_USAGE_ERROR)
       return true
     })
+  }
+})
+
+test('release CLI enforces registry and integrity checks through its process exit status', (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'icalendar-registry-'))
+  t.after(() => rmSync(dir, { recursive: true, force: true }))
+  const tarball = join(dir, 'synthetic.tgz')
+  const contents = 'synthetic package contents'
+  writeFileSync(tarball, contents)
+  const integrity = `sha512-${createHash('sha512').update(contents).digest('base64')}`
+  // A local npm substitute keeps every scenario deterministic and offline.
+  writeFileSync(join(dir, 'npm'), `#!/usr/bin/env node
+if (process.env.ICALENDAR_TEST_RESPONSE !== 'published') {
+  console.log(JSON.stringify({ error: { code: process.env.ICALENDAR_TEST_RESPONSE } }))
+  process.exitCode = 1
+} else {
+  console.log(JSON.stringify(process.argv[4] === 'version' ? '${version}' : process.env.ICALENDAR_TEST_INTEGRITY))
+}
+`, { mode: 0o700 })
+  for (const scenario of [
+    { response: 'published', archive: false, integrity, expected: EXIT_PUBLISHED },
+    { response: 'E404', archive: true, integrity, expected: EXIT_NOT_PUBLISHED },
+    { response: 'ECONNRESET', archive: true, integrity, expected: EXIT_UNEXPECTED_ERROR },
+    { response: 'published', archive: true, integrity, expected: EXIT_PUBLISHED },
+    { response: 'published', archive: true, integrity: 'sha512-different', expected: EXIT_UNEXPECTED_ERROR },
+  ]) {
+    const result = spawnSync(process.execPath, [
+      script, name, version, ...(scenario.archive ? [tarball] : []),
+    ], {
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        PATH: `${dir}${delimiter}${process.env.PATH}`,
+        ICALENDAR_TEST_RESPONSE: scenario.response,
+        ICALENDAR_TEST_INTEGRITY: scenario.integrity,
+      },
+      timeout: 10_000,
+    })
+    assert.equal(result.error, undefined)
+    assert.equal(result.status, scenario.expected, result.stderr)
   }
 })
