@@ -18,15 +18,46 @@ Each release should record:
 - Removed
 - Security
 
-## Release checklist
+## Release process
 
-1. Update version in `package.json`
-2. Add a dated section in `CHANGELOG.md`
-3. Run `npm run verify`
-4. If live credentials exist, run a create → update → delete smoke validation against a dedicated test calendar
-5. Tag the release as `vX.Y.Z`
-6. Push the tag
-7. If npm publishing is enabled, publish `@cayde-6/icalendar` with public access
+Publishing is a **manual version bump + manual git tag push** — no
+changesets, semantic-release, or release-please. See
+[`release-checklist.md`](release-checklist.md) for the exact steps.
+
+Use `npm version patch --no-git-tag-version` (or `minor` / `major`) to keep
+`package.json` and `package-lock.json` in sync, add a dated section to
+`CHANGELOG.md`, run `npm run verify`, tag `vX.Y.Z`, push the tag —
+`.github/workflows/release.yml` then verifies again, builds the package
+tarball exactly once with `npm pack`, publishes that same tarball to npm
+with provenance (via Trusted Publishing — no token involved), and attaches
+it to a GitHub release. Building the tarball once and reusing it for both
+destinations guarantees `npm install @cayde-6/icalendar` and the GitHub
+release download are byte-identical.
+
+The release workflow also:
+
+- fails fast if the pushed tag (without its `v`) doesn't match
+  `package.json`'s `version`, before installing anything
+- checks whether that version is already on npm
+  (`.github/scripts/npm-published.mjs`) and skips `npm publish` instead of
+  failing if its integrity matches the verified tarball; registry errors
+  or different package contents stop the release
+- creates the GitHub release or refreshes its tarball attachment if it
+  already exists, allowing retries after transient failures without a new tag
+
+## Development dependency overrides
+
+`test-exclude@8` still requests vulnerable versions of `glob` and
+`minimatch`. Scoped overrides select patched `glob@14` and `minimatch@11`
+for the coverage tool. `tsup@8` requests `esbuild@0.27`, so its override
+selects patched `esbuild@0.28`; upgrading to `tsup@9` would drop Node 20
+support. Remove these overrides when upstream supports the patched versions.
+`npm run verify` and the packaged CLI smoke test validate these combinations;
+CI also runs `npm audit` on Node 24.
+
+Development uses Node 20.19+ or a current Node 22/24/26 release, as required
+by `c8@12`. The published CLI continues to support Node 20+. `c8@12` also
+avoids the older coverage runner's `yargs` loading error on Node 26.
 
 ## CLI compatibility promise
 

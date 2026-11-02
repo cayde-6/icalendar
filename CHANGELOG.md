@@ -6,6 +6,18 @@ The format is inspired by Keep a Changelog, with lightweight SemVer rules docume
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-02
+
+### Fixed
+- Patched vulnerable development dependencies in the coverage and build tools while retaining Node 20 support.
+- Hardened release retries to stop on registry errors or a different published tarball and reuse an existing GitHub release.
+- Corrected packaged CLI smoke tests to check the actual version output and install from an unambiguous local path.
+
+### Changed
+- Added dependency auditing and packaged CLI smoke tests to CI.
+- Aligned Node type definitions with the oldest supported runtime and documented synchronized package/lockfile version bumps.
+- Updated Zod to 4.6.7 and added automated dependency updates.
+
 ## [0.2.2] - 2026-11-02
 
 ### Changed
