@@ -1,6 +1,6 @@
 {
   "name": "@cayde-6/icalendar",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "TypeScript CLI for CalDAV calendars, iCalendar events, and automation workflows",
   "type": "module",
   "private": false,
@@ -30,7 +30,9 @@
     "dev": "tsx src/cli.ts",
     "check": "tsc --noEmit -p tsconfig.json",
     "verify": "npm run check && npm run build && npm run test:coverage",
-    "start": "node dist/cli.js"
+    "start": "node dist/cli.js",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run verify"
   },
   "repository": {
     "type": "git",
@@ -46,8 +48,7 @@
     "icloud"
   ],
   "author": {
-    "name": "Maxim Egorov",
-    "email": "maxim.egorov.dev@gmail.com",
+    "name": "cayde-6",
     "url": "https://github.com/cayde-6"
   },
   "license": "MIT",
@@ -59,16 +60,26 @@
     "cac": "^6.7.14",
     "dotenv": "^17.4.2",
     "tsdav": "^2.2.0",
-    "zod": "^4.4.1"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
-    "c8": "^11.0.0",
-    "tsup": "^8.5.0",
-    "tsx": "^4.21.0",
+    "@types/node": "^20.19.43",
+    "c8": "^12.0.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.15",
     "typescript": "^6.0.3"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
+  },
+  "overrides": {
+    "test-exclude": {
+      "glob": "^14.0.3",
+      "minimatch": "^11.0.4"
+    },
+    "tsup": {
+      "esbuild": "^0.28.2"
+    }
   }
 }
